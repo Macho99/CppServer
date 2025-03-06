@@ -8,31 +8,24 @@
 #include <CoreMacro.h>
 #include "ThreadManager.h"
 
-#include "PlayerManager.h"
-#include "AccountManager.h"
-
+#include "SocketUtils.h"
+#include "Listener.h"
 
 int main()
 {
-	GThreadManager->Launch([=]
-		{
-			while (true)
-			{
-				cout << "PlayerThenAccount" << endl;
-				GPlayerManager.PlayerThenAccount();
-				this_thread::sleep_for(100ms);
-			}
-		});
+	Listener listener;
+	listener.StartAccept(NetAddress(L"127.0.0.1", 7777));
 
-	GThreadManager->Launch([=]
-		{
-			while (true)
+	for (int32 i = 0; i < 5; i++)
+	{
+		GThreadManager->Launch([=]()
 			{
-				cout << "AccountThenPlayer" << endl;
-				GAccountManager.AccountThenPlayer();
-				this_thread::sleep_for(100ms);
-			}
-		});
+				while (true)
+				{
+					GIocpCore.Dispatch();
+				}
+			});
+	}
 
 	GThreadManager->Join();
 }
