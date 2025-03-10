@@ -1,20 +1,41 @@
 ﻿#include "pch.h"
 #include <iostream>
-#include "CorePch.h"
-#include <atomic>
-#include <mutex>
-#include <windows.h>
-#include <future>
-#include <CoreMacro.h>
 #include "ThreadManager.h"
 
-#include "SocketUtils.h"
-#include "Listener.h"
+#include "Service.h"
+#include "Session.h"
+
+class GameSession : public Session
+{
+public:
+	~GameSession()
+	{
+		cout << "~GameSession" << endl;
+	}
+
+	virtual int32 OnRecv(BYTE* buffer, int32 len) override
+	{
+		cout << "OnRecv Len = " << len << endl;
+		Send(buffer, len);
+		return len;
+	}
+
+	virtual void OnSend(int32 len) override
+	{
+		cout << "OnSend Len = " << len << endl;
+	}
+};
 
 int main()
 {
-	Listener listener;
-	listener.StartAccept(NetAddress(L"127.0.0.1", 7777));
+	ServerServiceRef service = MakeShared<ServerService>(
+		NetAddress(L"127.0.0.1", 7777),
+		MakeShared<IocpCore>(),
+		MakeShared<GameSession>,
+		100
+	);
+
+	ASSERT_CRASH(service->Start());
 
 	for (int32 i = 0; i < 5; i++)
 	{
@@ -22,7 +43,7 @@ int main()
 			{
 				while (true)
 				{
-					GIocpCore.Dispatch();
+					service->GetIocpCore()->Dispatch();
 				}
 			});
 	}
