@@ -1,12 +1,13 @@
 ﻿#include "pch.h"
 #include "ThreadManager.h"
+#include <chrono>
 
 #include "Service.h"
 #include "Session.h"
 
-char sendBuffer[] = "Hello World!";
+char sendData[] = "Hello World";
 
-class ServerSession : public Session
+class ServerSession : public PacketSession
 {
 public:
 	~ServerSession()
@@ -17,28 +18,23 @@ public:
 public:
 	virtual void OnConnected() override
 	{
-		cout << "Connected To Server" << endl;
-		Send((BYTE*)sendBuffer, sizeof(sendBuffer));
 	}
 
 	virtual void OnDisconnected() override
 	{
-		cout << "Disconnected" << endl;
+		//cout << "Disconnected" << endl;
 	}
 
-	virtual int32 OnRecv(BYTE* buffer, int32 len) override
+	virtual int32 OnRecvPacket(BYTE* buffer, int32 len) override
 	{
-		cout << "OnRecv Len = " << len << endl;
+		PacketHeader header = *(PacketHeader*)buffer;
+		//cout << "Packet ID : " << header.id << "Size: " << header.size << endl;
 
-		this_thread::sleep_for(1s);
+		char recvBuffer[4096];
+		::memcpy(recvBuffer, &buffer[4], header.size - sizeof(PacketHeader));
+		cout << recvBuffer << endl;
 
-		Send((BYTE*)sendBuffer, sizeof(sendBuffer));
 		return len;
-	}
-
-	virtual void OnSend(int32 len) override
-	{
-		cout << "OnSend Len = " << len << endl;
 	}
 };
 
@@ -46,12 +42,11 @@ int main()
 {
 	this_thread::sleep_for(1s);
 
-
 	ClientServiceRef service = MakeShared<ClientService>(
 		NetAddress(L"127.0.0.1", 7777),
 		MakeShared<IocpCore>(),
 		MakeShared<ServerSession>,
-		1
+		1000
 	);
 
 	ASSERT_CRASH(service->Start());
@@ -68,4 +63,4 @@ int main()
 	}
 
 	GThreadManager->Join();
-}
+} 
