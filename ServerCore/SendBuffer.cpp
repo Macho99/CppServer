@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "SendBuffer.h"
 
-SendBuffer::SendBuffer(SendBufferChunkRef owner, BYTE* buffer, int32 allocSize)
+SendBuffer::SendBuffer(SendBufferChunkRef owner, BYTE* buffer, uint32 allocSize)
 	: _owner(owner), _buffer(buffer), _allocSize(allocSize)
 {
 }
@@ -75,7 +75,7 @@ SendBufferRef SendBufferManager::Open(uint32 size)
 		LSendBufferChunk->Reset();
 	}
 
-	cout << "FREE : " << LSendBufferChunk->FreeSize() << endl;
+	//cout << "FREE : " << LSendBufferChunk->FreeSize() << endl;
 
 	return LSendBufferChunk->Open(size);
 }

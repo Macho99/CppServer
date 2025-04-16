@@ -19,6 +19,9 @@ public:
 	static void InitTLS();
 	static void DestroyTLS();
 
+	static void DoGlabalQueueWork();
+	static void DistributeReserveJobs();
+
 private:
 	Mutex			_lock;
 	vector<thread>	_threads;

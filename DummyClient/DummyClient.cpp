@@ -1,6 +1,8 @@
 ﻿#include "pch.h"
 #include "ThreadManager.h"
 #include <chrono>
+#include "BufferReader.h"
+#include "ServerPacketHandler.h"
 
 #include "Service.h"
 #include "Session.h"
@@ -18,6 +20,9 @@ public:
 public:
 	virtual void OnConnected() override
 	{
+		Protocol::C_LOGIN pkt;
+		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
+		Send(sendBuffer);
 	}
 
 	virtual void OnDisconnected() override
@@ -25,28 +30,26 @@ public:
 		//cout << "Disconnected" << endl;
 	}
 
-	virtual int32 OnRecvPacket(BYTE* buffer, int32 len) override
+	virtual void OnRecvPacket(BYTE* buffer, int32 len) override
 	{
-		PacketHeader header = *(PacketHeader*)buffer;
-		//cout << "Packet ID : " << header.id << "Size: " << header.size << endl;
+		PacketSessionRef session = GetPacketSessionRef();
+		PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
 
-		char recvBuffer[4096];
-		::memcpy(recvBuffer, &buffer[4], header.size - sizeof(PacketHeader));
-		cout << recvBuffer << endl;
-
-		return len;
+		// TODO : packetId 대역 체크
+		ServerPacketHandler::HandlePacket(session, buffer, len);
 	}
 };
 
 int main()
 {
+	ServerPacketHandler::Init();
 	this_thread::sleep_for(1s);
 
 	ClientServiceRef service = MakeShared<ClientService>(
 		NetAddress(L"127.0.0.1", 7777),
 		MakeShared<IocpCore>(),
 		MakeShared<ServerSession>,
-		1000
+		1
 	);
 
 	ASSERT_CRASH(service->Start());
@@ -60,6 +63,16 @@ int main()
 					service->GetIocpCore()->Dispatch();
 				}
 			});
+	}
+
+	Protocol::C_CHAT chatPkt;
+	chatPkt.set_msg(u8"Hello World !");
+	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(chatPkt);
+
+	while (true)
+	{
+		service->Broadcast(sendBuffer);
+		this_thread::sleep_for(1s);
 	}
 
 	GThreadManager->Join();

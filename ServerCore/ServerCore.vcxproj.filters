@@ -16,6 +16,18 @@
     <Filter Include="Memory">
       <UniqueIdentifier>{e0151c7f-5044-4a10-a5c9-2095f753146d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Job">
+      <UniqueIdentifier>{143f8d30-b194-4152-b3e0-34d816ede9c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DB">
+      <UniqueIdentifier>{37c921c0-90fd-46f4-819a-c3c6451f3f8a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils\XML">
+      <UniqueIdentifier>{726ba9d7-4c3c-4a94-9ec7-b3d76babb3a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Log">
+      <UniqueIdentifier>{9c649205-a8ce-4db8-b37d-d22b6acccdb9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Types.h">
@@ -90,6 +102,63 @@
     <ClInclude Include="SendBuffer.h">
       <Filter>Network</Filter>
     </ClInclude>
+    <ClInclude Include="BufferWriter.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferReader.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Job.h">
+      <Filter>Job</Filter>
+    </ClInclude>
+    <ClInclude Include="JobQueue.h">
+      <Filter>Job</Filter>
+    </ClInclude>
+    <ClInclude Include="LockQueue.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="GlobalQueue.h">
+      <Filter>Job</Filter>
+    </ClInclude>
+    <ClInclude Include="JobTimer.h">
+      <Filter>Job</Filter>
+    </ClInclude>
+    <ClInclude Include="DBConnectionPool.h">
+      <Filter>DB</Filter>
+    </ClInclude>
+    <ClInclude Include="DBConnection.h">
+      <Filter>DB</Filter>
+    </ClInclude>
+    <ClInclude Include="DBBind.h">
+      <Filter>DB</Filter>
+    </ClInclude>
+    <ClInclude Include="rapidxml_iterators.hpp">
+      <Filter>Utils\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="rapidxml_print.hpp">
+      <Filter>Utils\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="rapidxml_utils.hpp">
+      <Filter>Utils\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="rapidxml.hpp">
+      <Filter>Utils\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="XmlParser.h">
+      <Filter>Utils\XML</Filter>
+    </ClInclude>
+    <ClInclude Include="FileUtils.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="ConsoleLog.h">
+      <Filter>Log</Filter>
+    </ClInclude>
+    <ClInclude Include="DBModel.h">
+      <Filter>DB</Filter>
+    </ClInclude>
+    <ClInclude Include="DBSynchronizer.h">
+      <Filter>DB</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CorePch.cpp">
@@ -151,6 +220,51 @@
     </ClCompile>
     <ClCompile Include="SendBuffer.cpp">
       <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferReader.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferWriter.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Job.cpp">
+      <Filter>Job</Filter>
+    </ClCompile>
+    <ClCompile Include="JobQueue.cpp">
+      <Filter>Job</Filter>
+    </ClCompile>
+    <ClCompile Include="LockQueue.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="GlobalQueue.cpp">
+      <Filter>Job</Filter>
+    </ClCompile>
+    <ClCompile Include="JobTimer.cpp">
+      <Filter>Job</Filter>
+    </ClCompile>
+    <ClCompile Include="DBConnection.cpp">
+      <Filter>DB</Filter>
+    </ClCompile>
+    <ClCompile Include="DBConnectionPool.cpp">
+      <Filter>DB</Filter>
+    </ClCompile>
+    <ClCompile Include="DBBind.cpp">
+      <Filter>DB</Filter>
+    </ClCompile>
+    <ClCompile Include="XmlParser.cpp">
+      <Filter>Utils\XML</Filter>
+    </ClCompile>
+    <ClCompile Include="FileUtils.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="ConsoleLog.cpp">
+      <Filter>Log</Filter>
+    </ClCompile>
+    <ClCompile Include="DBModel.cpp">
+      <Filter>DB</Filter>
+    </ClCompile>
+    <ClCompile Include="DBSynchronizer.cpp">
+      <Filter>DB</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
