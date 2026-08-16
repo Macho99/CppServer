@@ -42,7 +42,7 @@
     <ClCompile Include="Struct.pb.cc">
       <Filter>Protocol</Filter>
     </ClCompile>
-    <ClCompile Include="Room.cpp">
+    <ClCompile Include="World.cpp">
       <Filter>GameContents</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
@@ -71,7 +71,7 @@
     <ClInclude Include="Enum.pb.h">
       <Filter>Protocol</Filter>
     </ClInclude>
-    <ClInclude Include="Room.h">
+    <ClInclude Include="World.h">
       <Filter>GameContents</Filter>
     </ClInclude>
     <ClInclude Include="Player.h">

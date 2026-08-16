@@ -6,23 +6,24 @@ import "Struct.proto";
 
 message C_LOGIN
 {
-
+	string name = 1;
 }
 
 message S_LOGIN
 {
 	bool success = 1;
-	repeated Player players = 2; // 아이디 발급 전
+	Player myPlayer = 2;
+	repeated Player otherPlayers = 3;
 }
 
-message C_ENTER_GAME
+message S_PLAYER_ENTER
 {
-	uint64 playerIndex = 1;
+	repeated Player players = 1;
 }
 
-message S_ENTER_GAME
+message S_PLAYER_EXIT
 {
-	bool success = 1;
+	repeated uint64 playerIds = 1;
 }
 
 message C_CHAT

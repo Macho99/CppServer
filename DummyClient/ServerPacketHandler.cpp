@@ -14,26 +14,8 @@ bool Handle_S_LOGIN(PacketSessionRef& session, Protocol::S_LOGIN& pkt)
 {
 	//cout << "Handle_S_LOGIN" << endl;
 	if(pkt.success() == false)
-		return true;
+		return false;
 
-	if (pkt.players().size() == 0)
-	{
-		// 캐릭터 생성창
-	}
-
-	// 입장 UI 버튼 눌러서 게임 입장
-	Protocol::C_ENTER_GAME enterGamePkt;
-	enterGamePkt.set_playerindex(0); // 첫번째 캐릭터로 입장
-	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(enterGamePkt);
-	session->Send(sendBuffer);
-
-	return true;
-}
-
-bool Handle_S_ENTER_GAME(PacketSessionRef& session, Protocol::S_ENTER_GAME& pkt)
-{
-	//cout << "Handle_S_ENTER_GAME" << endl;
-	// TODO
 	return true;
 }
 

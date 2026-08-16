@@ -11,7 +11,7 @@
 #include "Session.h"
 #include "Protocol.pb.h"
 #include "Job.h"
-#include "Room.h"
+#include "World.h"
 #include <functional>
 #include "Player.h"
 #include "DBConnectionPool.h"

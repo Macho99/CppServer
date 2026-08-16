@@ -1,7 +1,7 @@
 #pragma once
 #include "JobQueue.h"
 
-class Room : public JobQueue
+class World : public JobQueue
 {
 public:
 	void Enter(PlayerRef player);
@@ -12,4 +12,4 @@ private:
 	map<uint64, PlayerRef> _players;
 };
 
-extern shared_ptr<Room> GRoom;
+extern shared_ptr<World> GWorld;

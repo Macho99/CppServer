@@ -64,6 +64,8 @@ public:
 	virtual ~ClientService() {}
 
 	virtual bool Start() override;
+
+    Set<SessionRef>& GetSessions() { return _sessions; }
 };
 
 /*--------------------
