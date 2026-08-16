@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "FileUtils.h"
+#include "ServerFileUtils.h"
 #include <filesystem>
 #include <fstream>
 
@@ -9,7 +9,7 @@
 
 namespace fs = std::filesystem;
 
-Vector<BYTE> FileUtils::ReadFile(const WCHAR* path)
+Vector<BYTE> ServerFileUtils::ReadFile(const WCHAR* path)
 {
 	Vector<BYTE> ret;
 
@@ -24,7 +24,7 @@ Vector<BYTE> FileUtils::ReadFile(const WCHAR* path)
 	return ret;
 }
 
-String FileUtils::Convert(string str)
+String ServerFileUtils::Convert(string str)
 {
 	const int32 srcLen = static_cast<int32>(str.size());
 

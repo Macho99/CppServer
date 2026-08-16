@@ -129,7 +129,7 @@ int main()
 	//
 
 
-	ASSERT_CRASH(GDBConnectionPool->Connect(1, L"Driver={SQL Server Native Client 11.0};Server=(localdb)\\ProjectModels;Database=ServerDB;Trusted_Connection=Yes;"));
+	ASSERT_CRASH(GDBConnectionPool->Connect(1, L"Driver={SQL Server Native Client 11.0};Server=(localdb)\\MSSQLLocalDB;Database=ServerDB;Trusted_Connection=Yes;"));
 
 
 	// Add Data

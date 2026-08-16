@@ -170,7 +170,7 @@
     <ClInclude Include="DBModel.h" />
     <ClInclude Include="DBSynchronizer.h" />
     <ClInclude Include="DeadLockProfiler.h" />
-    <ClInclude Include="FileUtils.h" />
+    <ClInclude Include="ServerFileUtils.h" />
     <ClInclude Include="GlobalQueue.h" />
     <ClInclude Include="IocpCore.h" />
     <ClInclude Include="IocpEvent.h" />
@@ -213,7 +213,7 @@
     <ClCompile Include="DBModel.cpp" />
     <ClCompile Include="DBSynchronizer.cpp" />
     <ClCompile Include="DeadLockProfiler.cpp" />
-    <ClCompile Include="FileUtils.cpp" />
+    <ClCompile Include="ServerFileUtils.cpp" />
     <ClCompile Include="GlobalQueue.cpp" />
     <ClCompile Include="IocpCore.cpp" />
     <ClCompile Include="IocpEvent.cpp" />

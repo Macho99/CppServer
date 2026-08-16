@@ -3,10 +3,10 @@
 #include "Types.h"
 
 /*-----------------
-	FileUtils
+	ServerFileUtils
 ------------------*/
 
-class FileUtils
+class ServerFileUtils
 {
 public:
 	static Vector<BYTE>		ReadFile(const WCHAR* path);

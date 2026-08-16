@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "XmlParser.h"
-#include "FileUtils.h"
+#include "ServerFileUtils.h"
 #include "CoreGlobal.h"
 
 /*-------------
@@ -177,8 +177,8 @@ Vector<XmlNode> XmlNode::FindChildren(const WCHAR* key)
 
 bool XmlParser::ParseFromFile(const WCHAR* path, OUT XmlNode& root)
 {
-	Vector<BYTE> bytes = FileUtils::ReadFile(path);
-	_data = FileUtils::Convert(string(bytes.begin(), bytes.end()));
+	Vector<BYTE> bytes = ServerFileUtils::ReadFile(path);
+	_data = ServerFileUtils::Convert(string(bytes.begin(), bytes.end()));
 
 	if (_data.empty())
 		return false;

@@ -11,7 +11,7 @@ ConsoleLog::~ConsoleLog()
 {
 }
 
-void ConsoleLog::WriteStdOut(Color color, const WCHAR* format, ...)
+void ConsoleLog::WriteStdOut(ConsoleColor color, const WCHAR* format, ...)
 {
 	if (format == nullptr)
 		return;
@@ -25,10 +25,10 @@ void ConsoleLog::WriteStdOut(Color color, const WCHAR* format, ...)
 
 	fflush(stdout);
 
-	SetColor(true, Color::WHITE);
+	SetColor(true, ConsoleColor::WHITE);
 }
 
-void ConsoleLog::WriteStdErr(Color color, const WCHAR* format, ...)
+void ConsoleLog::WriteStdErr(ConsoleColor color, const WCHAR* format, ...)
 {
 	WCHAR buffer[BUFFER_SIZE];
 
@@ -45,10 +45,10 @@ void ConsoleLog::WriteStdErr(Color color, const WCHAR* format, ...)
 	::fwprintf_s(stderr, buffer);
 	fflush(stderr);
 
-	SetColor(false, Color::WHITE);
+	SetColor(false, ConsoleColor::WHITE);
 }
 
-void ConsoleLog::SetColor(bool stdOut, Color color)
+void ConsoleLog::SetColor(bool stdOut, ConsoleColor color)
 {
 	static WORD SColors[]
 	{

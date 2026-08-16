@@ -147,7 +147,7 @@
     <ClInclude Include="XmlParser.h">
       <Filter>Utils\XML</Filter>
     </ClInclude>
-    <ClInclude Include="FileUtils.h">
+    <ClInclude Include="ServerFileUtils.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="ConsoleLog.h">
@@ -254,7 +254,7 @@
     <ClCompile Include="XmlParser.cpp">
       <Filter>Utils\XML</Filter>
     </ClCompile>
-    <ClCompile Include="FileUtils.cpp">
+    <ClCompile Include="ServerFileUtils.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="ConsoleLog.cpp">

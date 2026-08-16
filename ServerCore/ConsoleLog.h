@@ -4,7 +4,7 @@
 	ConsoleLog
 ----------------*/
 
-enum class Color
+enum class ConsoleColor
 {
 	BLACK,
 	WHITE,
@@ -23,11 +23,11 @@ public:
 	~ConsoleLog();
 
 public:
-	void		WriteStdOut(Color color, const WCHAR* str, ...);
-	void		WriteStdErr(Color color, const WCHAR* str, ...);
+	void		WriteStdOut(ConsoleColor color, const WCHAR* str, ...);
+	void		WriteStdErr(ConsoleColor color, const WCHAR* str, ...);
 
 protected:
-	void		SetColor(bool stdOut, Color color);
+	void		SetColor(bool stdOut, ConsoleColor color);
 
 private:
 	HANDLE		_stdOut;
