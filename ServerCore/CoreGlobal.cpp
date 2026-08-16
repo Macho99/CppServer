@@ -37,14 +37,35 @@ public:
 	}
 	~CoreGlobal()
 	{
-		delete GThreadManager;
-		delete GMemory;
-		delete GSendBufferManager;
-		delete GGlobalQueue;
+		GThreadManager->Join();
+
+		DeadLockProfiler* deadLockProfiler = GDeadLockProfiler;
+		GDeadLockProfiler = nullptr;
+		delete deadLockProfiler;
+
+		GJobTimer->Clear();
 		delete GJobTimer;
-		delete GDeadLockProfiler;
+		GJobTimer = nullptr;
+
+		delete GGlobalQueue;
+		GGlobalQueue = nullptr;
+
 		delete GDBConnectionPool;
-		delete GConsoleLogger;
+		GDBConnectionPool = nullptr;
+
+		GSendBufferManager->Shutdown();
+		delete GSendBufferManager;
+		GSendBufferManager = nullptr;
+
 		SocketUtils::Clear();
+
+		delete GConsoleLogger;
+		GConsoleLogger = nullptr;
+
+		delete GThreadManager;
+		GThreadManager = nullptr;
+
+		delete GMemory;
+		GMemory = nullptr;
 	}
 } CoreGlobal;

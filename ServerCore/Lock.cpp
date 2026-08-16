@@ -1,14 +1,15 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "Lock.h"
 #include "DeadLockProfiler.h"
 
 void Lock::WriteLock(const char* name)
 {
 #if _DEBUG
-	GDeadLockProfiler->PushLock(name);
+	if (GDeadLockProfiler != nullptr)
+		GDeadLockProfiler->PushLock(name);
 #endif
 
-	// µ¿ÀÏÇÑ ¾²·¹µå°¡ ¼ÒÀ¯ÇÏ°í ÀÖ´Ù¸é ¹«Á¶°Ç ¼º°ø.
+	// ë™ì¼í•œ ì“°ë ˆë“œê°€ ì†Œìœ í•˜ê³  ìˆë‹¤ë©´ ë¬´ì¡°ê±´ ì„±ê³µ.
 	const uint32 lockThreadId = (_lockFlag.load() & WRITE_THREAD_MASK) >> 16;
 	if (LThreadId == lockThreadId)
 	{
@@ -16,7 +17,7 @@ void Lock::WriteLock(const char* name)
 		return;
 	}
 
-	// ¾Æ¹«µµ ¼ÒÀ¯ ¹× °øÀ¯ÇÏ°í ÀÖÁö ¾ÊÀ» ¶§, °æÇÕÇØ¼­ ¼ÒÀ¯±Ç È¹µæ
+	// ì•„ë¬´ë„ ì†Œìœ  ë° ê³µìœ í•˜ê³  ìˆì§€ ì•Šì„ ë•Œ, ê²½í•©í•´ì„œ ì†Œìœ ê¶Œ íšë“
 	const int64 begineTick = ::GetTickCount64();
 	const uint32 desired = ((LThreadId << 16) & WRITE_THREAD_MASK);
 	while (true)
@@ -41,10 +42,11 @@ void Lock::WriteLock(const char* name)
 void Lock::WriteUnlock(const char* name)
 {
 #if _DEBUG
-	GDeadLockProfiler->PopLock(name);
+	if (GDeadLockProfiler != nullptr)
+		GDeadLockProfiler->PopLock(name);
 #endif
 
-	// ReadLock ´Ù Ç®±â Àü¿¡´Â WriteUnlock ºÒ°¡´É
+	// ReadLock ë‹¤ í’€ê¸° ì „ì—ëŠ” WriteUnlock ë¶ˆê°€ëŠ¥
 	if ((_lockFlag.load() & READ_COUNT_MASK) != 0)
 		CRASH("INVALID_UNLOCK_ORDER");
 
@@ -58,10 +60,11 @@ void Lock::WriteUnlock(const char* name)
 void Lock::ReadLock(const char* name)
 {
 #if _DEBUG
-	GDeadLockProfiler->PushLock(name);
+	if (GDeadLockProfiler != nullptr)
+		GDeadLockProfiler->PushLock(name);
 #endif
 
-	// µ¿ÀÏÇÑ ¾²·¹µå°¡ ¼ÒÀ¯ÇÏ°í ÀÖ´Ù¸é ¹«Á¶°Ç ¼º°ø.
+	// ë™ì¼í•œ ì“°ë ˆë“œê°€ ì†Œìœ í•˜ê³  ìˆë‹¤ë©´ ë¬´ì¡°ê±´ ì„±ê³µ.
 	const uint32 lockThreadId = (_lockFlag.load() & WRITE_THREAD_MASK) >> 16;
 	if (LThreadId == lockThreadId)
 	{
@@ -69,7 +72,7 @@ void Lock::ReadLock(const char* name)
 		return;
 	}
 
-	// ¾Æ¹«µµ ¼ÒÀ¯ÇÏ°í ÀÖÁö ¾ÊÀ» ¶§ °æÇÕÇØ¼­ °øÀ¯ Ä«¿îÆ®¸¦ ¿Ã¸°´Ù.
+	// ì•„ë¬´ë„ ì†Œìœ í•˜ê³  ìˆì§€ ì•Šì„ ë•Œ ê²½í•©í•´ì„œ ê³µìœ  ì¹´ìš´íŠ¸ë¥¼ ì˜¬ë¦°ë‹¤.
 	const int64 begineTick = ::GetTickCount64();
 	while (true)
 	{
@@ -90,7 +93,8 @@ void Lock::ReadLock(const char* name)
 void Lock::ReadUnlock(const char* name)
 {
 #if _DEBUG
-	GDeadLockProfiler->PopLock(name);
+	if (GDeadLockProfiler != nullptr)
+		GDeadLockProfiler->PopLock(name);
 #endif
 
 	if ((_lockFlag.fetch_sub(1) & READ_COUNT_MASK) == 0)

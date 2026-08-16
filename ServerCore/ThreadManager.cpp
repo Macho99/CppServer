@@ -48,6 +48,9 @@ void ThreadManager::InitTLS()
 
 void ThreadManager::DestroyTLS()
 {
+	LSendBufferChunk.reset();
+	LCurrentJobQueue = nullptr;
+	ASSERT_CRASH(LLockStack.empty());
 }
 
 void ThreadManager::DoGlabalQueueWork()

@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "SendBuffer.h"
 
 SendBuffer::SendBuffer(SendBufferChunkRef owner, BYTE* buffer, uint32 allocSize)
@@ -58,8 +58,19 @@ void SendBufferChunk::Close(uint32 writeSize)
 	SendBufferManager
 -----------------------*/
 
+SendBufferManager::SendBufferManager()
+{
+}
+
+SendBufferManager::~SendBufferManager()
+{
+	Shutdown();
+}
+
 SendBufferRef SendBufferManager::Open(uint32 size)
 {
+	ASSERT_CRASH(_shuttingDown.load() == false);
+
 	if (LSendBufferChunk == nullptr)
 	{
 		LSendBufferChunk = Pop(); // Write_Lock
@@ -68,7 +79,7 @@ SendBufferRef SendBufferManager::Open(uint32 size)
 
 	ASSERT_CRASH(LSendBufferChunk->IsOpen() == false);
 
-	// ´Ù ½èÀ¸¸é ¹ö¸®°í »õ°Å·Î ±³Ã¼
+	// ë‹¤ ì¼ìœ¼ë©´ ë²„ë¦¬ê³  ìƒˆê±°ë¡œ êµì²´
 	if (LSendBufferChunk->FreeSize() < size)
 	{
 		LSendBufferChunk = Pop();
@@ -78,6 +89,25 @@ SendBufferRef SendBufferManager::Open(uint32 size)
 	//cout << "FREE : " << LSendBufferChunk->FreeSize() << endl;
 
 	return LSendBufferChunk->Open(size);
+}
+
+void SendBufferManager::Shutdown()
+{
+	if (_shuttingDown.exchange(true))
+		return;
+
+	std::vector<SendBufferChunkRef> sendBufferChunks;
+	{
+		WRITE_LOCK;
+		sendBufferChunks.reserve(_sendBufferChunks.size());
+		for (SendBufferChunkRef& sendBufferChunk : _sendBufferChunks)
+			sendBufferChunks.push_back(std::move(sendBufferChunk));
+
+		_sendBufferChunks.clear();
+	}
+
+	// PushGlobalì´ ë‹¤ì‹œ managerë¡œ ë°˜ë‚©í•˜ì§€ ì•Šê³  ì‹¤ì œ ë©”ëª¨ë¦¬ë¥¼ í•´ì œí•œë‹¤.
+	sendBufferChunks.clear();
 }
 
 SendBufferChunkRef SendBufferManager::Pop()
@@ -103,5 +133,12 @@ void SendBufferManager::Push(SendBufferChunkRef buffer)
 
 void SendBufferManager::PushGlobal(SendBufferChunk* buffer)
 {
-	GSendBufferManager->Push(SendBufferChunkRef(buffer, PushGlobal));
+	SendBufferManager* manager = GSendBufferManager;
+	if (manager != nullptr && manager->_shuttingDown.load() == false)
+	{
+		manager->Push(SendBufferChunkRef(buffer, PushGlobal));
+		return;
+	}
+
+	xdelete(buffer);
 }

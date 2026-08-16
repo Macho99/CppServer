@@ -12,68 +12,80 @@ char sendData[] = "Hello World";
 class ServerSession : public PacketSession
 {
 public:
-	~ServerSession()
-	{
-		cout << "~ServerSession" << endl;
-	}
+    ~ServerSession()
+    {
+        cout << "~ServerSession" << endl;
+    }
 
 public:
-	virtual void OnConnected() override
-	{
-		Protocol::C_LOGIN pkt;
-		auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
-		Send(sendBuffer);
-	}
+    virtual void OnConnected() override
+    {
+        Protocol::C_LOGIN pkt;
+        auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
+        Send(sendBuffer);
+    }
 
-	virtual void OnDisconnected() override
-	{
-		//cout << "Disconnected" << endl;
-	}
+    virtual void OnDisconnected() override
+    {
+        //cout << "Disconnected" << endl;
+    }
 
-	virtual void OnRecvPacket(BYTE* buffer, int32 len) override
-	{
-		PacketSessionRef session = GetPacketSessionRef();
-		PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
+    virtual void OnRecvPacket(BYTE* buffer, int32 len) override
+    {
+        PacketSessionRef session = GetPacketSessionRef();
+        PacketHeader* header = reinterpret_cast<PacketHeader*>(buffer);
 
-		// TODO : packetId 대역 체크
-		ServerPacketHandler::HandlePacket(session, buffer, len);
-	}
+        // TODO : packetId 대역 체크
+        ServerPacketHandler::HandlePacket(session, buffer, len);
+    }
 };
 
 int main()
 {
-	ServerPacketHandler::Init();
-	this_thread::sleep_for(1s);
+    ServerPacketHandler::Init();
+    this_thread::sleep_for(1s);
 
-	ClientServiceRef service = MakeShared<ClientService>(
-		NetAddress(L"127.0.0.1", 7777),
-		MakeShared<IocpCore>(),
-		MakeShared<ServerSession>,
-		1
-	);
+    Atomic<bool> isRunning = true;
+    SessionRef serverSession;
 
-	ASSERT_CRASH(service->Start());
+    ClientServiceRef service = MakeShared<ClientService>(
+        NetAddress(L"127.0.0.1", 7777),
+        MakeShared<IocpCore>(),
+        [&serverSession]() -> SessionRef
+        {
+            serverSession = MakeShared<ServerSession>();
+            return serverSession;
+        },
+        1
+    );
 
-	for (int32 i = 0; i < 2; i++)
-	{
-		GThreadManager->Launch([=]()
-			{
-				while (true)
-				{
-					service->GetIocpCore()->Dispatch();
-				}
-			});
-	}
+    ASSERT_CRASH(service->Start());
 
-	Protocol::C_CHAT chatPkt;
-	chatPkt.set_msg(u8"Hello World !");
-	auto sendBuffer = ServerPacketHandler::MakeSendBuffer(chatPkt);
+    for (int32 i = 0; i < 2; i++)
+    {
+        GThreadManager->Launch([&isRunning, service]()
+            {
+                while (isRunning.load())
+                {
+                    service->GetIocpCore()->Dispatch(100);
+                }
+            });
+    }
 
-	while (true)
-	{
-		service->Broadcast(sendBuffer);
-		this_thread::sleep_for(1s);
-	}
+    Protocol::C_CHAT chatPkt;
+    chatPkt.set_msg(u8"Hello World !");
+    {
+        auto sendBuffer = ServerPacketHandler::MakeSendBuffer(chatPkt);
 
-	GThreadManager->Join();
-} 
+        for (int i = 0; i < 1; i++)
+        {
+            service->Broadcast(sendBuffer);
+            this_thread::sleep_for(1s);
+        }
+
+        serverSession->Disconnect(L"Sent 5 packets");
+        isRunning.store(false);
+    }
+
+    GThreadManager->Join();
+}
