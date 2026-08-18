@@ -88,6 +88,18 @@ void World::PlayerInput(PlayerRef player, Protocol::C_PLAYER_INPUT pkt)
     }
 }
 
+bool World::ValidatePosition(ValidatePositionInfo& info) const
+{
+    if (_navMeshBuilder.IsBuilt() == false)
+        return false;
+    return _navMeshBuilder.ValidatePosition(info);
+}
+
+void World::LoadNavMesh(const fs::path& navPath)
+{
+    _navMeshBuilder.LoadFromFile(navPath);
+}
+
 void World::Update(float delta)
 {
 	for (auto& playerPair : _players)

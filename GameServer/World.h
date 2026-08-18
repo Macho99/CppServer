@@ -13,8 +13,10 @@ public:
 	void Leave(PlayerRef player);
 	void Broadcast(SendBufferRef sendBuffer);
     void PlayerInput(PlayerRef player, Protocol::C_PLAYER_INPUT pkt);
+    bool ValidatePosition(ValidatePositionInfo& info) const;
 
 public:
+    void LoadNavMesh(const fs::path& navPath);
 	void Update(float delta);
 
 private:

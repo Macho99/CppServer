@@ -1,5 +1,6 @@
 #pragma once
 #include "StateMachine.h"
+#include "NavTypes.h"
 
 enum class KEY_TYPE
 {
@@ -80,6 +81,7 @@ public:
     const Protocol::TransformData& GetTransformData() const { return _transformData; }
     void SetCameraYaw(float yaw) { _cameraYaw = yaw; }
     float GetCameraYaw() const { return _cameraYaw; }
+    ValidatePositionInfo& GetValidatePositionInfo() { return _validatePositionInfo; }
 
 private:
 	uint64 _playerId = 0;
@@ -88,6 +90,8 @@ private:
 
     vector<KEY_STATE> _inputKeyStates;
 	StateMachine<PLAYER_STATE> _stateMachine;
+
+	ValidatePositionInfo _validatePositionInfo;
 
     float _cameraYaw = 0.f;
     Protocol::TransformData _transformData;

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "PlayerMoveState.h"
 #include "Player.h"
+#include "World.h"
 
 #include <cmath>
 
@@ -38,6 +39,25 @@ namespace
         t = std::clamp(t, 0.0f, 1.0f);
         return a + (b - a) * t;
     }
+
+    Vec3 ToVec3(Protocol::Vec3 vec)
+    {
+        return Vec3(vec.x(), vec.y(), vec.z());
+    }
+
+    Vec2 ToVec2(Protocol::Vec2 vec)
+    {
+        return Vec2(vec.x(), vec.y());
+    }
+
+    Protocol::Vec3 ToProtocolVec3(const Vec3& vec)
+    {
+        Protocol::Vec3 protocolVec;
+        protocolVec.set_x(vec.x);
+        protocolVec.set_y(vec.y);
+        protocolVec.set_z(vec.z);
+        return protocolVec;
+    }
 }
 
 void PlayerMoveState::Enter()
@@ -49,7 +69,18 @@ void PlayerMoveState::Update(float deltaTime)
     const float curYaw = _owner.GetTransformData().yaw();
     float targetYaw = Lerp(curYaw, _owner.GetCameraYaw(), 0.7f);
     _owner.GetTransformData().set_yaw(targetYaw);
+
     Move(deltaTime);
+
+    ValidatePositionInfo& validatePositionInfo = _owner.GetValidatePositionInfo();
+    validatePositionInfo.curPosition = ToVec3(_owner.GetTransformData().pos());
+    bool needToRemap = GWorld->ValidatePosition(validatePositionInfo);
+    if (needToRemap)
+    {
+        Protocol::Vec3* position = _owner.GetTransformData().mutable_pos();
+        Protocol::Vec3 remappedPosition = ToProtocolVec3(validatePositionInfo.validatedPosition);
+        position->CopyFrom(remappedPosition);
+    }
 }
 
 void PlayerMoveState::Exit()

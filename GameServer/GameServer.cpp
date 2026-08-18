@@ -237,6 +237,8 @@ int main()
 		100
 	);
 
+
+    GWorld->LoadNavMesh(L"D:\\Projects\\source\\repos\\GameCoding\\Assets\\Rural_Cabin50.nav");
 	ASSERT_CRASH(service->Start());
 	GWorld->DoTimer(50, &World::Update, 0.05f);
 
