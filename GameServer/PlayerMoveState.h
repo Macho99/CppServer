@@ -17,7 +17,6 @@ public:
 
 private:
     Player& _owner;
-    Vec2 _velocity{ 0.f, 0.f };
 
     float _moveSpeed = 2.5f;
     float _sprintSpeed = 5.f;

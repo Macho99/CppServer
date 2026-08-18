@@ -54,7 +54,9 @@ void PlayerMoveState::Update(float deltaTime)
 
 void PlayerMoveState::Exit()
 {
-    _velocity = Vec2(0.f, 0.f);
+    Protocol::Vec2* velocity = _owner.GetTransformData().mutable_velocity();
+    velocity->set_x(0.f);
+    velocity->set_y(0.f);
 }
 
 void PlayerMoveState::Move(float deltaTime)
@@ -77,17 +79,23 @@ void PlayerMoveState::Move(float deltaTime)
     const float maxSpeed = _owner.GetKey(KEY_TYPE::LSHIFT) ? _sprintSpeed : _moveSpeed;
     const Vec2 desiredVelocity = worldMoveDirection * maxSpeed;
     const float rate = localMoveDirection.LengthSquared() > 0.f ? _acceleration : _deceleration;
-    _velocity = MoveTowards(_velocity, desiredVelocity, rate * deltaTime);
+
+    Protocol::Vec2* protocolVelocity = _owner.GetTransformData().mutable_velocity();
+    Vec2 velocity = Vec2(protocolVelocity->x(), protocolVelocity->y());
+    velocity = MoveTowards(velocity, desiredVelocity, rate * deltaTime);
 
     Protocol::Vec3* position = transform.mutable_pos();
-    position->set_x(position->x() + _velocity.x * deltaTime);
-    position->set_z(position->z() + _velocity.y * deltaTime);
+    position->set_x(position->x() + velocity.x * deltaTime);
+    position->set_z(position->z() + velocity.y * deltaTime);
 
-    const Vec2 localVelocity = InverseRotateByYaw(_velocity, transform.yaw());
+    const Vec2 localVelocity = InverseRotateByYaw(velocity, transform.yaw());
     Protocol::Vec2* blendInput = transform.mutable_blendinput();
     blendInput->set_x(-localVelocity.x / _moveSpeed);
     blendInput->set_y(-localVelocity.y / _moveSpeed);
 
-    if (localMoveDirection.LengthSquared() <= 0.f && _velocity.LengthSquared() <= 0.0001f)
+    protocolVelocity->set_x(velocity.x);
+    protocolVelocity->set_y(velocity.y);
+
+    if (localMoveDirection.LengthSquared() <= 0.f && velocity.LengthSquared() <= 0.0001f)
         _owner.ChangeState(PLAYER_STATE::IDLE);
 }

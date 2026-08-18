@@ -94,5 +94,5 @@ void World::Update(float delta)
     SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(movePkt);
     Broadcast(sendBuffer);
 
-    GWorld->DoTimer(100, &World::Update, delta);
+    GWorld->DoTimer(50, &World::Update, delta);
 }

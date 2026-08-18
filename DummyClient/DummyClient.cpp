@@ -80,20 +80,5 @@ int main()
         service->Broadcast(sendBuffer);
     }
 
-    this_thread::sleep_for(1s);
-    Protocol::C_CHAT chatPkt;
-    chatPkt.set_msg(u8"Hello World !");
-    {
-        auto sendBuffer = ServerPacketHandler::MakeSendBuffer(chatPkt);
-        for (int i = 0; i < 1; i++)
-        {
-            service->Broadcast(sendBuffer);
-            this_thread::sleep_for(1s);
-        }
-
-        serverSession->Disconnect(L"Sent packets");
-        isRunning.store(false);
-    }
-
     GThreadManager->Join();
 }

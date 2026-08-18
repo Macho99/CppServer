@@ -238,7 +238,7 @@ int main()
 	);
 
 	ASSERT_CRASH(service->Start());
-	GWorld->DoTimer(100, &World::Update, 0.1f);
+	GWorld->DoTimer(50, &World::Update, 0.05f);
 
 	for (int32 i = 0; i < 5; i++)
 	{

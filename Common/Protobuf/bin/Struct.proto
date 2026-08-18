@@ -21,7 +21,8 @@ message TransformData
 	uint64 id = 1;
 	Vec3 pos = 2;
 	float yaw = 3;
-	Vec2 blendInput = 4;
+	Vec2 velocity = 4;
+	Vec2 blendInput = 5;
 }
 
 message HealthData
