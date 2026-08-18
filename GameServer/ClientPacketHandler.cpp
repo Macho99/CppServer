@@ -17,6 +17,8 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 {
 	//cout << "Handle_C_LOGIN" << endl;
 	GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
+    if (gameSession->_player != nullptr)
+        return false;
 
 	// TODO : Validation 체크
 
@@ -26,15 +28,25 @@ bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt)
 	// ID 발급
 	static Atomic<uint64> idGenerator = 1;
 
-	PlayerRef playerRef = MakeShared<Player>();
-	playerRef->playerId = idGenerator++;
-	playerRef->name = pkt.name();
-	playerRef->ownerSession = gameSession;
+	const string name = pkt.name().empty() ? "EmptyName" : pkt.name();
+
+	PlayerRef playerRef = MakeShared<Player>(idGenerator++, name, gameSession);
 	gameSession->_player = playerRef;
 
     GWorld->DoAsync(&World::Enter, playerRef);
 
 	return true;
+}
+
+bool Handle_C_PLAYER_INPUT(PacketSessionRef& session, Protocol::C_PLAYER_INPUT& pkt)
+{
+    GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
+    if (gameSession->_player == nullptr)
+        return false;
+
+    GWorld->DoAsync(&World::PlayerInput, gameSession->_player, pkt);
+
+    return true;
 }
 
 bool Handle_C_CHAT(PacketSessionRef& session, Protocol::C_CHAT& pkt)

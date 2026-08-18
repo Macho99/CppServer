@@ -248,6 +248,7 @@ int main()
 	}
 
 	DoWorkerJob(service);
+	GWorld->DoTimer(100, &World::Update);
 
 	GThreadManager->Join();
 }

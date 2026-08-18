@@ -13,54 +13,69 @@ void World::Enter(PlayerRef newPlayer)
 		Protocol::S_LOGIN loginPkt;
 		loginPkt.set_success(true);
 		Protocol::Player* myPlayer = loginPkt.mutable_myplayer();
-        myPlayer->set_id(newPlayer->playerId);
-        myPlayer->set_name(newPlayer->name);
+        myPlayer->set_id(newPlayer->GetPlayerId());
+        myPlayer->set_name(newPlayer->GetName());
 
 		for (auto& otherPlayerPair : _players)
 		{
 			PlayerRef otherPlayer = otherPlayerPair.second;
 
 			Protocol::Player* otherPlayerData = loginPkt.add_otherplayers();
-			otherPlayerData->set_id(otherPlayer->playerId);
-			otherPlayerData->set_name(otherPlayer->name);
+			otherPlayerData->set_id(otherPlayer->GetPlayerId());
+			otherPlayerData->set_name(otherPlayer->GetName());
 		}
 
 		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt);
-		newPlayer->ownerSession.lock()->Send(sendBuffer);
+		newPlayer->GetOwnerSession()->Send(sendBuffer);
 	}
 
 	{
         Protocol::S_PLAYER_ENTER enterPkt;
         Protocol::Player* newPlayerData = enterPkt.add_players();
-        newPlayerData->set_id(newPlayer->playerId);
-        newPlayerData->set_name(newPlayer->name);
+        newPlayerData->set_id(newPlayer->GetPlayerId());
+        newPlayerData->set_name(newPlayer->GetName());
 
         SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(enterPkt);
         Broadcast(sendBuffer);
 	}
 
-	_players[newPlayer->playerId] = newPlayer;
+	_players[newPlayer->GetPlayerId()] = newPlayer;
 }
 
 void World::Leave(PlayerRef player)
 {
     Protocol::S_PLAYER_EXIT exitPkt;
-    exitPkt.add_playerids(player->playerId);
+    exitPkt.add_playerids(player->GetPlayerId());
 
 	SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(exitPkt);
     for (auto& p : _players)
     {
-        if (p.second->playerId != player->playerId)
-            p.second->ownerSession.lock()->Send(sendBuffer);
+        if (p.second->GetPlayerId() != player->GetPlayerId())
+            p.second->GetOwnerSession()->Send(sendBuffer);
     }
 
-	_players.erase(player->playerId);
+	_players.erase(player->GetPlayerId());
 }
 
 void World::Broadcast(SendBufferRef sendBuffer)
 {
 	for (auto& p : _players)
 	{
-		p.second->ownerSession.lock()->Send(sendBuffer);
+		p.second->GetOwnerSession()->Send(sendBuffer);
 	}
+}
+
+void World::PlayerInput(PlayerRef player, Protocol::C_PLAYER_INPUT pkt)
+{
+    for (int32 i = 0; i < pkt.inputs_size(); ++i)
+    {
+        KEY_TYPE keyType = static_cast<KEY_TYPE>(pkt.inputs(i).keytype());
+        bool keyDown = pkt.inputs(i).down();
+        player->SetKeyState(keyType, keyDown);
+        cout << "World::PlayerInput : " << (int)keyType << (keyDown ? "down" : "up") << endl;
+    }
+}
+
+void World::Update(float delta)
+{
 }

@@ -20,9 +20,9 @@ public:
 public:
     virtual void OnConnected() override
     {
-        Protocol::C_LOGIN pkt;
-        auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
-        Send(sendBuffer);
+        //Protocol::C_LOGIN pkt;
+        //auto sendBuffer = ServerPacketHandler::MakeSendBuffer(pkt);
+        //Send(sendBuffer);
     }
 
     virtual void OnDisconnected() override
@@ -43,7 +43,7 @@ public:
 int main()
 {
     ServerPacketHandler::Init();
-    this_thread::sleep_for(1s);
+    this_thread::sleep_for(2s);
 
     Atomic<bool> isRunning = true;
     SessionRef serverSession;
@@ -72,18 +72,26 @@ int main()
             });
     }
 
+    this_thread::sleep_for(1s);
+    {
+        Protocol::C_LOGIN loginPkt;
+        loginPkt.set_name(u8"DummyPlayer1");
+        SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(loginPkt);
+        service->Broadcast(sendBuffer);
+    }
+
+    this_thread::sleep_for(1s);
     Protocol::C_CHAT chatPkt;
     chatPkt.set_msg(u8"Hello World !");
     {
         auto sendBuffer = ServerPacketHandler::MakeSendBuffer(chatPkt);
-
         for (int i = 0; i < 1; i++)
         {
             service->Broadcast(sendBuffer);
             this_thread::sleep_for(1s);
         }
 
-        serverSession->Disconnect(L"Sent 5 packets");
+        serverSession->Disconnect(L"Sent packets");
         isRunning.store(false);
     }
 

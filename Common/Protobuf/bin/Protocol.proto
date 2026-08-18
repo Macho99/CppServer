@@ -26,6 +26,46 @@ message S_PLAYER_EXIT
 	repeated uint64 playerIds = 1;
 }
 
+message C_PLAYER_INPUT
+{
+	repeated Input inputs = 1;
+}
+
+//message C_PLAYER_ATTACK
+//{
+//	uint64 playerId = 1;
+//}
+
+message S_PLAYER_MOVE
+{
+	repeated TransformData transforms = 1;
+}
+
+//message S_PLAYER_HP_CHANGE
+//{
+//	repeated HealthData healths = 1;
+//}
+
+message S_MONSTER_SPAWN
+{
+	repeated Monster monsters = 1;
+}
+
+message S_MONSTER_MOVE
+{
+	repeated TransformData transforms = 1;
+}
+
+message S_MONSTER_DESPAWN
+{
+	repeated uint64 monsterIds = 1;
+}
+
+//message S_MONSTER_HP_CHANGE
+//{
+//	repeated HealthData healths = 1;
+//}
+
 message C_CHAT
 {
 	string msg = 1;

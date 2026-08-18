@@ -18,5 +18,6 @@
 
 #include "CorePch.h"
 #include "Enum.pb.h"
+#include "Struct.pb.h"
 
 using PlayerRef = shared_ptr<class Player>;
