@@ -4,8 +4,19 @@
 #include "GameSession.h"
 #include "Protocol.pb.h"
 #include "ClientPacketHandler.h"
+#include "PolyMeshField.h"
+#include "DetailMeshField.h"
+#include "NavMeshQuery.h"
 
 shared_ptr<World> GWorld = make_shared<World>();
+
+World::World()
+{
+}
+
+World::~World()
+{
+}
 
 void World::Enter(PlayerRef newPlayer)
 {

@@ -33,4 +33,3 @@ using Quaternion = DirectX::SimpleMath::Quaternion;
 using Ray = DirectX::SimpleMath::Ray;
 
 using PlayerRef = shared_ptr<class Player>;
-

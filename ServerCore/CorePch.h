@@ -6,6 +6,7 @@
 #include "CoreGlobal.h"
 #include "Container.h"
 
+#define NOMINMAX
 #include <Windows.h>
 #include <chrono>
 #include <fstream>
@@ -16,6 +17,7 @@
 #include <thread>
 #include <type_traits>
 #include <utility>
+#include <filesystem>
 
 using std::array;
 using std::atomic;
@@ -49,6 +51,9 @@ using std::vector;
 using std::wcout;
 using std::weak_ptr;
 using std::wstring;
+using std::min;
+using std::max;
+using std::hash;
 
 namespace this_thread = std::this_thread;
 using namespace std::chrono_literals;

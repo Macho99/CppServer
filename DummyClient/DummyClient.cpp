@@ -43,7 +43,9 @@ public:
 int main()
 {
     ServerPacketHandler::Init();
-    this_thread::sleep_for(2s);
+
+    std::cout << "서버에 접속하려면 Enter를 누르세요...\n";
+    std::cin.get();
 
     Atomic<bool> isRunning = true;
     SessionRef serverSession;
