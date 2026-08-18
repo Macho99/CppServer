@@ -1,4 +1,6 @@
 #pragma once
+#include "StateMachine.h"
+
 enum class KEY_TYPE
 {
 	UP = VK_UP,
@@ -50,6 +52,12 @@ enum
 	KEY_STATE_COUNT = static_cast<int32>(KEY_STATE::END),
 };
 
+enum class PLAYER_STATE
+{
+    IDLE,
+    MOVE,
+};
+
 class GameSession;
 
 class Player
@@ -60,10 +68,18 @@ public:
 
 	void SetKeyState(KEY_TYPE keyType, bool keyDown);
     bool GetKey(KEY_TYPE keyType) const;
+	bool IsMoving() const;
+	void Update(float deltaTime);
+	void ChangeState(PLAYER_STATE state) { _stateMachine.ChangeState(state); }
 
     uint64 GetPlayerId() const { return _playerId; }
     string GetName() const { return _name; }
     shared_ptr<GameSession> GetOwnerSession() const { return _ownerSession.lock(); }
+    PLAYER_STATE GetState() const { return _stateMachine.GetCurrentState(); }
+    Protocol::TransformData& GetTransformData() { return _transformData; }
+    const Protocol::TransformData& GetTransformData() const { return _transformData; }
+    void SetCameraYaw(float yaw) { _cameraYaw = yaw; }
+    float GetCameraYaw() const { return _cameraYaw; }
 
 private:
 	uint64 _playerId = 0;
@@ -71,7 +87,9 @@ private:
 	weak_ptr<GameSession> _ownerSession;
 
     vector<KEY_STATE> _inputKeyStates;
+	StateMachine<PLAYER_STATE> _stateMachine;
 
+    float _cameraYaw = 0.f;
     Protocol::TransformData _transformData;
 };
 

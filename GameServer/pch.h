@@ -11,13 +11,26 @@
 #ifdef _DEBUG
 #pragma comment(lib, "ServerCore\\Debug\\ServerCore.lib")
 #pragma comment(lib, "Protobuf\\Debug\\libprotobufd.lib")
+#pragma comment(lib, "NavBuild/Debug/NavBuild.lib")
+#pragma comment(lib, "MathLibrary/Debug/MathLibrary.lib")
 #else
 #pragma comment(lib, "ServerCore\\Release\\ServerCore.lib")
 #pragma comment(lib, "Protobuf\\Release\\libprotobuf.lib")
+#pragma comment(lib, "NavBuild/Release/NavBuild.lib")
+#pragma comment(lib, "MathLibrary/Release/MathLibrary.lib")
 #endif
 
 #include "CorePch.h"
+#include "SimpleMath.h"
 #include "Enum.pb.h"
 #include "Struct.pb.h"
 
+using Vec2 = DirectX::SimpleMath::Vector2;
+using Vec3 = DirectX::SimpleMath::Vector3;
+using Vec4 = DirectX::SimpleMath::Vector4;
+using Matrix = DirectX::SimpleMath::Matrix;
+using Quaternion = DirectX::SimpleMath::Quaternion;
+using Ray = DirectX::SimpleMath::Ray;
+
 using PlayerRef = shared_ptr<class Player>;
+

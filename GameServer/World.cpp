@@ -67,6 +67,7 @@ void World::Broadcast(SendBufferRef sendBuffer)
 
 void World::PlayerInput(PlayerRef player, Protocol::C_PLAYER_INPUT pkt)
 {
+    player->SetCameraYaw(fmodf(pkt.camerayaw() + 180.f, 360.f));
     for (int32 i = 0; i < pkt.inputs_size(); ++i)
     {
         KEY_TYPE keyType = static_cast<KEY_TYPE>(pkt.inputs(i).keytype());
@@ -78,4 +79,20 @@ void World::PlayerInput(PlayerRef player, Protocol::C_PLAYER_INPUT pkt)
 
 void World::Update(float delta)
 {
+	for (auto& playerPair : _players)
+	{
+		playerPair.second->Update(delta);
+	}
+
+    Protocol::S_PLAYER_MOVE movePkt;
+    for (auto& playerPair : _players)
+    {
+        PlayerRef player = playerPair.second;
+        Protocol::TransformData* transformData = movePkt.add_transforms();
+        transformData->CopyFrom(player->GetTransformData());
+    }
+    SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(movePkt);
+    Broadcast(sendBuffer);
+
+    GWorld->DoTimer(100, &World::Update, delta);
 }

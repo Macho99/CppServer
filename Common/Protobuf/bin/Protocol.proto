@@ -28,7 +28,8 @@ message S_PLAYER_EXIT
 
 message C_PLAYER_INPUT
 {
-	repeated Input inputs = 1;
+	float cameraYaw = 1;
+	repeated Input inputs = 2;
 }
 
 //message C_PLAYER_ATTACK
