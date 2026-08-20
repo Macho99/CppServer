@@ -19,7 +19,7 @@ void PlayerState::DecelerateVelocity(float deltaTime)
     protocolVelocity->set_y(velocity.y);
 }
 
-bool PlayerState::TryPlayAttackAnimation() const
+bool PlayerState::TryPlayAttackJumpAnimation() const
 {
     string clipName = "";
 
@@ -27,10 +27,12 @@ bool PlayerState::TryPlayAttackAnimation() const
         clipName = "sword and shield slash";
     else if (_owner.GetInputKey(KEY_TYPE::R))
         clipName = "sword and shield slash (2)";
+    else if (_owner.GetInputKey(KEY_TYPE::SPACE))
+        clipName = "sword and shield jump";
     else
         return false;
 
-    PlayerAnimationRequest request;
+    AnimationRequest<PLAYER_STATE> request;
     request.clipName = clipName;
     request.returnState = PLAYER_STATE::IDLE;
     request.playRate = 1.f;

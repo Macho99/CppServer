@@ -69,6 +69,12 @@
     <ClCompile Include="PlayerAnimationState.cpp">
       <Filter>GameContents\Player</Filter>
     </ClCompile>
+    <ClCompile Include="Zombie.cpp">
+      <Filter>GameContents\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>GameContents</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -118,6 +124,12 @@
     </ClInclude>
     <ClInclude Include="PlayerAnimationState.h">
       <Filter>GameContents\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Zombie.h">
+      <Filter>GameContents\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>GameContents</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

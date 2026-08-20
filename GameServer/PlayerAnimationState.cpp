@@ -18,7 +18,7 @@ void PlayerAnimationState::Enter()
     _elapsedTime = 0.f;
     _clipDuration = 0.f;
 
-    const PlayerAnimationRequest& request = _owner.GetAnimationRequest();
+    const AnimationRequest<PLAYER_STATE>& request = _owner.GetAnimationRequest();
     if (request.clipName.empty())
     {
         _owner.ChangeState(PLAYER_STATE::IDLE);
@@ -72,7 +72,7 @@ void PlayerAnimationState::SetAnimation(string animationName)
     _clipDuration = static_cast<float>(_currentClipData->positions.size()) / AnimationFrameRate;
 
     Protocol::S_PLAYER_ANIMATION pkt;
-    pkt.set_playerid(_owner.GetPlayerId());
+    pkt.set_playerid(_owner.GetId());
     pkt.set_animationindex(clipIndex);
 
     SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(pkt);

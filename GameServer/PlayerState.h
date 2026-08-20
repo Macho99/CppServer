@@ -13,7 +13,7 @@ public:
 
 protected:
     void DecelerateVelocity(float deltaTime);
-    bool TryPlayAttackAnimation() const;
+    bool TryPlayAttackJumpAnimation() const;
 
     Player& _owner;
 };

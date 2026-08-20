@@ -8,12 +8,12 @@ void PlayerIdleState::Enter()
 
 void PlayerIdleState::Update(float deltaTime)
 {
-    if (TryPlayAttackAnimation())
+    if (TryPlayAttackJumpAnimation())
     {
         return;
     }
 
-    if (_owner.IsMoving())
+    if (_owner.IsMovingInput())
     {
         _owner.ChangeState(PLAYER_STATE::MOVE);
         return;

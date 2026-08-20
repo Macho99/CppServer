@@ -1,6 +1,5 @@
 #pragma once
-#include "StateMachine.h"
-#include "NavTypes.h"
+#include "Character.h"
 
 enum class KEY_TYPE
 {
@@ -60,54 +59,30 @@ enum class PLAYER_STATE
     ANIMATION,
 };
 
-struct PlayerAnimationRequest
-{
-    string clipName;
-    PLAYER_STATE returnState = PLAYER_STATE::IDLE;
-    float playRate = 1.f;
-    bool applyRootMotion = true;
-};
-
 class GameSession;
 
-class Player
+class Player : public Character<PLAYER_STATE>
 {
+    using Super = Character<PLAYER_STATE>;
 public:
 	Player(uint64 playerId, string name, weak_ptr<GameSession> ownerSession);
 	~Player();
 
 	void SetKeyState(KEY_TYPE keyType, bool keyDown);
     bool GetInputKey(KEY_TYPE keyType) const;
-	bool IsMoving() const;
-	void Update(float deltaTime);
-	void PlayAnimation(PlayerAnimationRequest request);
-	void ChangeState(PLAYER_STATE state);
+	bool IsMovingInput() const;
+    virtual void Update(float deltaTime) override;
 
-    uint64 GetPlayerId() const { return _playerId; }
     string GetName() const { return _name; }
     shared_ptr<GameSession> GetOwnerSession() const { return _ownerSession.lock(); }
-    PLAYER_STATE GetState() const { return _stateMachine.GetCurrentState(); }
-    Protocol::TransformData& GetTransformData() { return _transformData; }
-    const Protocol::TransformData& GetTransformData() const { return _transformData; }
     void SetCameraYaw(float yaw) { _cameraYaw = yaw; }
     float GetCameraYaw() const { return _cameraYaw; }
-    ValidatePositionInfo& GetValidatePositionInfo() { return _validatePositionInfo; }
-    const PlayerAnimationRequest& GetAnimationRequest() const { return _animationRequest; }
 
 private:
-	uint64 _playerId = 0;
 	string _name;
 	weak_ptr<GameSession> _ownerSession;
 
     vector<KEY_STATE> _inputKeyStates;
-	StateMachine<PLAYER_STATE> _stateMachine;
-
-    ValidatePositionInfo _validatePositionInfo;
-    PlayerAnimationRequest _animationRequest;
-
     float _cameraYaw = 0.f;
-    Protocol::TransformData _transformData;
-	
-    bool _stateChanged = false;
 };
 

@@ -26,7 +26,7 @@ void World::Enter(PlayerRef newPlayer)
 		Protocol::S_LOGIN loginPkt;
 		loginPkt.set_success(true);
 		Protocol::Player* myPlayer = loginPkt.mutable_myplayer();
-        myPlayer->set_id(newPlayer->GetPlayerId());
+        myPlayer->set_id(newPlayer->GetId());
         myPlayer->set_name(newPlayer->GetName());
 
 		for (auto& otherPlayerPair : _players)
@@ -34,7 +34,7 @@ void World::Enter(PlayerRef newPlayer)
 			PlayerRef otherPlayer = otherPlayerPair.second;
 
 			Protocol::Player* otherPlayerData = loginPkt.add_otherplayers();
-			otherPlayerData->set_id(otherPlayer->GetPlayerId());
+			otherPlayerData->set_id(otherPlayer->GetId());
 			otherPlayerData->set_name(otherPlayer->GetName());
 		}
 
@@ -45,29 +45,29 @@ void World::Enter(PlayerRef newPlayer)
 	{
         Protocol::S_PLAYER_ENTER enterPkt;
         Protocol::Player* newPlayerData = enterPkt.add_players();
-        newPlayerData->set_id(newPlayer->GetPlayerId());
+        newPlayerData->set_id(newPlayer->GetId());
         newPlayerData->set_name(newPlayer->GetName());
 
         SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(enterPkt);
         Broadcast(sendBuffer);
 	}
 
-	_players[newPlayer->GetPlayerId()] = newPlayer;
+	_players[newPlayer->GetId()] = newPlayer;
 }
 
 void World::Leave(PlayerRef player)
 {
     Protocol::S_PLAYER_EXIT exitPkt;
-    exitPkt.add_playerids(player->GetPlayerId());
+    exitPkt.add_playerids(player->GetId());
 
 	SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(exitPkt);
     for (auto& p : _players)
     {
-        if (p.second->GetPlayerId() != player->GetPlayerId())
+        if (p.second->GetId() != player->GetId())
             p.second->GetOwnerSession()->Send(sendBuffer);
     }
 
-	_players.erase(player->GetPlayerId());
+	_players.erase(player->GetId());
 }
 
 void World::Broadcast(SendBufferRef sendBuffer)
@@ -129,6 +129,9 @@ void World::LoadAnimationData(const fs::path& animDataPath)
 		for (ClipEventData& clipEventData : clipData.events)
 		{
 			fileUtils.Read(clipEventData.eventName);
+            fileUtils.Read(clipEventData.boolParam);
+            fileUtils.Read(clipEventData.intParam);
+            fileUtils.Read(clipEventData.floatParam);
 			fileUtils.Read(clipEventData.frame);
 		}
 
