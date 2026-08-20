@@ -33,7 +33,6 @@ public:
 
 private:
     const float _maxVelocity = 2.f;           // 좀비 종 전체의 최대 속도
-    const float _minVelocity = 1.f;          // 좀비 종 전체의 최소 속도
     const float _individualMaxVelocity = 0.f; // 개체별 최대 속도 min ~ max
 
     static constexpr float PlayerDetectionRadius = 15.f;

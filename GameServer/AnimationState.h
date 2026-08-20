@@ -35,7 +35,8 @@ public:
 
     void Update(float deltaTime) override
     {
-        _owner.DecelerateVelocity(deltaTime);
+        _owner.Decelerate(_owner.GetTransformData().mutable_velocity(), deltaTime);
+        _owner.Decelerate(_owner.GetTransformData().mutable_blendinput(), deltaTime);
 
         if (deltaTime <= 0.f || _currentClipData == nullptr || _clipDuration <= 0.f)
             return;

@@ -61,9 +61,9 @@ void PlayerMoveState::Move(float deltaTime)
     position->set_z(position->z() + velocity.y * deltaTime);
 
     const Vec2 localVelocity = MathUtils::InverseRotateByYaw(velocity, transform.yaw());
-    //Protocol::Vec2* blendInput = transform.mutable_blendinput();
-    //blendInput->set_x(-localVelocity.x / _moveSpeed);
-    //blendInput->set_y(-localVelocity.y / _moveSpeed);
+    Protocol::Vec2* blendInput = transform.mutable_blendinput();
+    blendInput->set_x(-localVelocity.x / _moveSpeed);
+    blendInput->set_y(-localVelocity.y / _moveSpeed);
 
     protocolVelocity->set_x(velocity.x);
     protocolVelocity->set_y(velocity.y);

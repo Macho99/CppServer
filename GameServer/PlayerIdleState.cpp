@@ -19,7 +19,8 @@ void PlayerIdleState::Update(float deltaTime)
         return;
     }
 
-    _owner.DecelerateVelocity(deltaTime);
+    _owner.Decelerate(_owner.GetTransformData().mutable_velocity(), deltaTime);
+    _owner.Decelerate(_owner.GetTransformData().mutable_blendinput(), deltaTime);
 }
 
 void PlayerIdleState::Exit()

@@ -53,19 +53,18 @@ public:
     ValidatePositionInfo& GetValidatePositionInfo() { return _validatePositionInfo; }
     const AnimationRequest<TStateType>& GetAnimationRequest() const { return _animationRequest; }
 
-    void DecelerateVelocity(float deltaTime)
+    void Decelerate(Protocol::Vec2* target, float deltaTime)
     {
         if (deltaTime <= 0.f)
             return;
 
-        Protocol::Vec2* protocolVelocity = _transformData.mutable_velocity();
-        Vec2 velocity(protocolVelocity->x(), protocolVelocity->y());
+        Vec2 targetVec2(target->x(), target->y());
         constexpr float Deceleration = 5.f;
-        velocity = MathUtils::MoveTowards(
-            velocity, Vec2(0.f, 0.f), deltaTime * Deceleration);
+        targetVec2 = MathUtils::MoveTowards(
+            targetVec2, Vec2(0.f, 0.f), deltaTime * Deceleration);
 
-        protocolVelocity->set_x(velocity.x);
-        protocolVelocity->set_y(velocity.y);
+        target->set_x(targetVec2.x);
+        target->set_y(targetVec2.y);
     }
 
     void PlayAnimation(AnimationRequest<TStateType> request)

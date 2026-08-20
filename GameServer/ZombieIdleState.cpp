@@ -17,19 +17,25 @@ void ZombieIdleState::Update(float deltaTime)
         return;
     }
 
+    _owner.Decelerate(_owner.GetTransformData().mutable_blendinput(), deltaTime);
+    Vec2 blendInput = Vec2(_owner.GetTransformData().blendinput().x(), _owner.GetTransformData().blendinput().y());
+
     _leftDecisionTime -= deltaTime;
     if (_leftDecisionTime > 0.f)
         return;
 
-    if (TrySetPatrolTarget())
+    const float random = MathUtils::Random(0.f, 1.f);
+    if (random < 0.2f && TrySetPatrolTarget())
     {
         _owner.ChangeState(ZOMBIE_STATE::MOVE);
         return;
     }
-
-    Protocol::TransformData& transformData = _owner.GetTransformData();
-    transformData.mutable_velocity()->set_y(MathUtils::Lerp(transformData.velocity().y(), 0.f, deltaTime * 2.f));
-    _leftDecisionTime = MathUtils::Random(MinDecisionInterval, MaxDecisionInterval);
+    else
+    {
+        AnimationRequest<ZOMBIE_STATE> request;
+        request.clipName = "zombie walk";
+        _owner.PlayAnimation(request);
+    }
 }
 
 void ZombieIdleState::Exit()

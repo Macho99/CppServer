@@ -6,7 +6,7 @@
 ZombieMoveState::ZombieMoveState(Zombie& owner)
     : _owner(owner)
 {
-    _moveConfig.stoppingDist = owner.GetAttackDistance();
+    //_moveConfig.stoppingDist = owner.GetAttackDistance();
     _moveConfig.speed = _owner.GetIndividualMaxVelocity();
     _moveConfig.turnSpeed = 180.f;
 }
@@ -39,8 +39,30 @@ void ZombieMoveState::Update(float deltaTime)
         const Vec3 targetPlayerPos = ProtocolUtils::ToVec3(targetPlayer->GetTransformData().pos());
         const Vec3 ownerPos = ProtocolUtils::ToVec3(_owner.GetTransformData().pos());
         const float distSquared = Vec3::DistanceSquared(targetPlayerPos, ownerPos);
-        if (distSquared < _owner.GetAttackDistance()* _owner.GetAttackDistance())
+        if (distSquared < _owner.GetAttackDistance() * _owner.GetAttackDistance())
         {
+            Vec3 directionToPlayer = targetPlayerPos - ownerPos;
+            directionToPlayer.y = 0.f;
+            const float directionLengthSquared = directionToPlayer.LengthSquared();
+            if (directionLengthSquared > kEps)
+                directionToPlayer /= sqrtf(directionLengthSquared);
+
+            const Vec3 forwardDirection = MathUtils::RotateByYaw(
+                Vec3::Forward,
+                _owner.GetTransformData().yaw());
+            const float minAttackDot = cosf(30.f * PI / 180.f);
+            if (directionLengthSquared > kEps &&
+                directionToPlayer.Dot(forwardDirection) < minAttackDot)
+            {
+                const float targetYaw = MathUtils::GetYawFromDirection(directionToPlayer) + 180.f;
+                const float nextYaw = MathUtils::MoveTowardsAngle(
+                    _owner.GetTransformData().yaw(),
+                    targetYaw,
+                    _moveConfig.turnSpeed * deltaTime);
+                _owner.GetTransformData().set_yaw(nextYaw);
+                return;
+            }
+
             const float random = MathUtils::Random(0.f, 1.f);
             AnimationRequest<ZOMBIE_STATE> request;
             request.clipName = random > 0.5f ? "zombie attack" : "zombie attack (2)";
@@ -70,13 +92,10 @@ void ZombieMoveState::Update(float deltaTime)
     const float offsetYaw = _moveInfo.rotationY - 180.f;
     transformData.set_yaw(offsetYaw);
     transformData.mutable_pos()->CopyFrom(ProtocolUtils::ToProtocolVec3(_moveInfo.position));
-    Protocol::Vec2* velocity = transformData.mutable_velocity();
-    const Vec2 curVel = Vec2(velocity->x(), velocity->y());
-    const Vec3 worldVel = MathUtils::RotateByYaw(Vec3(0, 0, _owner.GetIndividualMaxVelocity()), _moveInfo.rotationY);
-    const Vec2 newVel = Vec2(worldVel.x, worldVel.z);
-    const Vec2 interpolatedVel = Vec2::Lerp(curVel, newVel, deltaTime);
-    velocity->set_x(interpolatedVel.x);
-    velocity->set_y(interpolatedVel.y);
+    Protocol::Vec2* blendInput = transformData.mutable_blendinput();
+    blendInput->set_x(0);
+    const float interpolatedY = MathUtils::Lerp(blendInput->y(), _owner.GetIndividualMaxVelocity() * 2.f / _owner.GetMaxVelocity(), deltaTime * 2.f);
+    blendInput->set_y(interpolatedY);
 }
 
 void ZombieMoveState::Exit()
@@ -103,13 +122,12 @@ void ZombieMoveState::TryFindPath(float delta)
         }
     }
 
-    const float findPathInterval = CalculateFindPathInterval(
-        *player, ownerPosition, targetPosition);
+    const float ratio = Vec3::Distance(ownerPosition, targetPosition) / 30.f;
+    const float findPathInterval = MathUtils::Lerp(MinFindPathInterval, MaxFindPathInterval, ratio);
     if (_elapsedFindPathTime < findPathInterval)
         return;
 
     const NavMeshBuilder& navMesh = GWorld->GetNavMesh();
-    _moveConfig.stoppingDist = player != nullptr ? 3.f : 0.5f;
     if (navMesh.TryFindPath(ownerPosition, targetPosition, _moveInfo) == false)
     {
         _elapsedFindPathTime = 0.f;
@@ -120,45 +138,8 @@ void ZombieMoveState::TryFindPath(float delta)
     }
 
     _moveInfo.position = ownerPosition;
-    _moveInfo.rotationY = _owner.GetTransformData().yaw() - 180.f;
+    _moveInfo.rotationY = _owner.GetTransformData().yaw() + 180.f;
     _owner.SetTargetPosition(targetPosition);
     _elapsedFindPathTime = 0.f;
     cout << "ZombieMoveState::TryFindPath : Found path to target position (" << targetPosition.x << ", " << targetPosition.y << ", " << targetPosition.z << ")" << endl;
-}
-
-float ZombieMoveState::CalculateFindPathInterval(
-    const Player& player,
-    const Vec3& ownerPosition,
-    const Vec3& playerPosition) const
-{
-    return MaxFindPathInterval;
-
-    Vec3 toPlayer = playerPosition - ownerPosition;
-    toPlayer.y = 0.f;
-    const float distanceToPlayer = toPlayer.Length();
-
-    Vec3 targetMovement = playerPosition - _owner.GetTargetPosition();
-    targetMovement.y = 0.f;
-    const float distanceFromLastTarget = targetMovement.Length();
-
-    const Protocol::Vec2& playerVelocity = player.GetTransformData().velocity();
-    const float playerSpeed = Vec2(playerVelocity.x(), playerVelocity.y()).Length();
-    const float zombieSpeed = max(_owner.GetIndividualMaxVelocity(), 0.1f);
-
-    const float estimatedApproachTime = distanceToPlayer / (zombieSpeed + playerSpeed);
-    const float distanceBasedInterval = std::clamp(
-        estimatedApproachTime * 0.2f,
-        MinFindPathInterval,
-        MaxFindPathInterval);
-
-    const float speedUrgency = 1.f + std::clamp(playerSpeed / zombieSpeed, 0.f, 2.f);
-    const float movementUrgency = 1.f + std::clamp(
-        distanceFromLastTarget / max(_moveConfig.stoppingDist, 1.f),
-        0.f,
-        2.f);
-
-    return std::clamp(
-        distanceBasedInterval / (speedUrgency * movementUrgency),
-        MinFindPathInterval,
-        MaxFindPathInterval);
 }

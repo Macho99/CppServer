@@ -221,8 +221,6 @@ void World::Update()
         ? 0.f
         : static_cast<float>(curTick - _lastUpdateTick) * 0.001f;
 
-    cout << "World::Update : delta = " << delta << " seconds" << endl;
-
 	for (auto& playerPair : _players)
 	{
         playerPair.second->Update(delta);

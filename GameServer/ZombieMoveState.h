@@ -26,8 +26,8 @@ private:
     MoveInfo _moveInfo;
     float _elapsedFindPathTime = 0.f;
 
-    static constexpr float MinFindPathInterval = 0.15f;
-    static constexpr float MaxFindPathInterval = 3.f;
+    static constexpr float MinFindPathInterval = 0.5f;
+    static constexpr float MaxFindPathInterval = 5.f;
     static constexpr float MinTargetMovementForRepath = 0.5f;
 };
 

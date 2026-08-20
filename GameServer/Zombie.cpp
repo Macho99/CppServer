@@ -8,7 +8,7 @@
 #include "ProtocolUtils.h"
 
 Zombie::Zombie(uint64 id)
-    : Super(id), _individualMaxVelocity(MathUtils::Random(_minVelocity, _maxVelocity))
+    : Super(id), _individualMaxVelocity(MathUtils::Random(_maxVelocity * 0.5f, _maxVelocity))
 {
     _stateMachine.AddState(ZOMBIE_STATE::IDLE, std::make_unique<ZombieIdleState>(*this));
     _stateMachine.AddState(ZOMBIE_STATE::MOVE, std::make_unique<ZombieMoveState>(*this));
