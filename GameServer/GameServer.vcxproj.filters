@@ -16,6 +16,12 @@
     <Filter Include="DB">
       <UniqueIdentifier>{f22cb81f-8eae-4974-a774-b02dd56b0b1a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameContents\Player">
+      <UniqueIdentifier>{0765e157-13c8-4712-b04b-217f528b07b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameContents\Monster">
+      <UniqueIdentifier>{dfe87551-632a-45f9-a1cc-0459a466c395}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameServer.cpp">
@@ -46,13 +52,22 @@
       <Filter>GameContents</Filter>
     </ClCompile>
     <ClCompile Include="Player.cpp">
-      <Filter>GameContents</Filter>
+      <Filter>GameContents\Player</Filter>
     </ClCompile>
     <ClCompile Include="PlayerIdleState.cpp">
-      <Filter>GameContents</Filter>
+      <Filter>GameContents\Player</Filter>
     </ClCompile>
     <ClCompile Include="PlayerMoveState.cpp">
-      <Filter>GameContents</Filter>
+      <Filter>GameContents\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerState.cpp">
+      <Filter>GameContents\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="ProtocolUtils.cpp">
+      <Filter>Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerAnimationState.cpp">
+      <Filter>GameContents\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -80,20 +95,29 @@
     <ClInclude Include="World.h">
       <Filter>GameContents</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>GameContents</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerIdleState.h">
-      <Filter>GameContents</Filter>
-    </ClInclude>
-    <ClInclude Include="PlayerMoveState.h">
-      <Filter>GameContents</Filter>
-    </ClInclude>
     <ClInclude Include="StateMachine.h">
       <Filter>GameContents</Filter>
     </ClInclude>
     <ClInclude Include="GenProcedures.h">
       <Filter>DB</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerMoveState.h">
+      <Filter>GameContents\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>GameContents\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerIdleState.h">
+      <Filter>GameContents\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerState.h">
+      <Filter>GameContents\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="ProtocolUtils.h">
+      <Filter>Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerAnimationState.h">
+      <Filter>GameContents\Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

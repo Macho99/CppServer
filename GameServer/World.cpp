@@ -159,3 +159,40 @@ void World::Update(float delta)
 
     GWorld->DoTimer(50, &World::Update, delta);
 }
+
+const AnimationClipData& World::GetPlayerAnimationClipData(const string& clipName) const
+{
+    for (const AnimationClipData& clipData : _playerAnimData.clips)
+    {
+        if (clipData.clipName == clipName)
+            return clipData;
+    }
+    ASSERT_CRASH(false, "Animation Clip Not Found");
+}
+
+const AnimationClipData& World::GetPlayerAnimationClipData(int32 clipIndex) const
+{
+    if (clipIndex >= 0 && clipIndex < static_cast<int32>(_playerAnimData.clips.size()))
+        return _playerAnimData.clips[clipIndex];
+
+    ASSERT_CRASH(false, "Animation Clip Not Found");
+}
+
+const AnimationClipData& World::GetZombieAnimationClipData(const string& clipName) const
+{
+    for (const AnimationClipData& clipData : _zombieAnimData.clips)
+    {
+        if (clipData.clipName == clipName)
+            return clipData;
+    }
+
+    ASSERT_CRASH(false, "Animation Clip Not Found");
+}
+
+const AnimationClipData& World::GetZombieAnimationClipData(int32 clipIndex) const
+{
+    if (clipIndex >= 0 && clipIndex < static_cast<int32>(_zombieAnimData.clips.size()))
+        return _zombieAnimData.clips[clipIndex];
+
+    ASSERT_CRASH(false, "Animation Clip Not Found");
+}

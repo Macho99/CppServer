@@ -1,18 +1,13 @@
 #pragma once
 
-#include "StateMachine.h"
+#include "PlayerState.h"
 
-class Player;
-
-class PlayerIdleState : public IState
+class PlayerIdleState : public PlayerState
 {
 public:
-    explicit PlayerIdleState(Player& owner) : _owner(owner) {}
+    explicit PlayerIdleState(Player& owner) : PlayerState(owner) {}
 
     void Enter() override;
     void Update(float deltaTime) override;
     void Exit() override;
-
-private:
-    Player& _owner;
 };

@@ -68,7 +68,7 @@ public:
 	~Player();
 
 	void SetKeyState(KEY_TYPE keyType, bool keyDown);
-    bool GetKey(KEY_TYPE keyType) const;
+    bool GetInputKey(KEY_TYPE keyType) const;
 	bool IsMoving() const;
 	void Update(float deltaTime);
 	void ChangeState(PLAYER_STATE state) { _stateMachine.ChangeState(state); }

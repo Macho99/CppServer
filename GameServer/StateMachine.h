@@ -11,6 +11,7 @@ public:
 
     virtual void Enter() {}
     virtual void Update(float deltaTime) = 0;
+    virtual void LateUpdate(float deltaTime) {}
     virtual void Exit() {}
 };
 
@@ -48,6 +49,14 @@ public:
             return;
 
         _states.at(_currentState)->Update(deltaTime);
+    }
+
+    void LateUpdate(float deltaTime)
+    {
+        if (!_hasCurrentState)
+            return;
+
+        _states.at(_currentState)->LateUpdate(deltaTime);
     }
 
     bool HasCurrentState() const { return _hasCurrentState; }

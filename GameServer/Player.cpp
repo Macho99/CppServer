@@ -29,18 +29,19 @@ void Player::SetKeyState(KEY_TYPE keyType, bool keyDown)
     _inputKeyStates[static_cast<int32>(keyType)] = keyDown ? KEY_STATE::PRESS : KEY_STATE::NONE;
 }
 
-bool Player::GetKey(KEY_TYPE keyType) const
+bool Player::GetInputKey(KEY_TYPE keyType) const
 {
     return _inputKeyStates[static_cast<int32>(keyType)] == KEY_STATE::PRESS;
 }
 
 bool Player::IsMoving() const
 {
-    return GetKey(KEY_TYPE::W) || GetKey(KEY_TYPE::A) ||
-        GetKey(KEY_TYPE::S) || GetKey(KEY_TYPE::D);
+    return GetInputKey(KEY_TYPE::W) || GetInputKey(KEY_TYPE::A) ||
+        GetInputKey(KEY_TYPE::S) || GetInputKey(KEY_TYPE::D);
 }
 
 void Player::Update(float deltaTime)
 {
     _stateMachine.Update(deltaTime);
+    _stateMachine.LateUpdate(deltaTime);
 }

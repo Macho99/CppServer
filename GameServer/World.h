@@ -37,6 +37,10 @@ public:
     void LoadNavMesh(const fs::path& navPath);
     void LoadAnimationData(const fs::path& animDataPath);
 	void Update(float delta);
+    const AnimationClipData& GetPlayerAnimationClipData(const string& clipName) const;
+    const AnimationClipData& GetPlayerAnimationClipData(int32 clipIndex) const;
+    const AnimationClipData& GetZombieAnimationClipData(const string& clipName) const;
+    const AnimationClipData& GetZombieAnimationClipData(int32 clipIndex) const;
 
 private:
 	map<uint64, PlayerRef> _players;
