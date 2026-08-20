@@ -237,9 +237,10 @@ int main()
 		100
 	);
 
-
-    GWorld->LoadNavMesh(L"D:\\Projects\\source\\repos\\GameCoding\\Assets\\Rural_Cabin50.nav");
+    GWorld->LoadNavMesh(L"..\\..\\GameCoding\\Assets\\Rural_Cabin50.nav");
+    cout << "NavMesh Loaded..." << endl;
 	ASSERT_CRASH(service->Start());
+    cout << "Server Start..." << endl;
 	GWorld->DoTimer(50, &World::Update, 0.05f);
 
 	for (int32 i = 0; i < 5; i++)

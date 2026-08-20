@@ -62,6 +62,7 @@ int main()
     );
 
     ASSERT_CRASH(service->Start());
+    std::cout << "서버에 접속되었습니다.\n";
 
     for (int32 i = 0; i < 2; i++)
     {

@@ -2,37 +2,12 @@
 #include "PlayerMoveState.h"
 #include "Player.h"
 #include "World.h"
+#include "MathUtils.h"
 
 #include <cmath>
 
 namespace
 {
-    Vec2 MoveTowards(const Vec2& current, const Vec2& target, float maxDelta)
-    {
-        const Vec2 delta = target - current;
-        const float distance = delta.Length();
-        if (distance <= maxDelta || distance <= 0.0001f)
-            return target;
-
-        return current + delta * (maxDelta / distance);
-    }
-
-    Vec2 RotateByYaw(const Vec2& value, float yaw)
-    {
-        constexpr float DEG_TO_RAD = 3.14159265358979323846f / 180.f;
-        const float radians = yaw * DEG_TO_RAD;
-        const float sinYaw = std::sin(radians);
-        const float cosYaw = std::cos(radians);
-
-        return Vec2(
-            cosYaw * value.x + sinYaw * value.y,
-            -sinYaw * value.x + cosYaw * value.y);
-    }
-
-    Vec2 InverseRotateByYaw(const Vec2& value, float yaw)
-    {
-        return RotateByYaw(value, -yaw);
-    }
     template<typename T>
     static T Lerp(const T& a, const T& b, float t)
     {
@@ -105,7 +80,7 @@ void PlayerMoveState::Move(float deltaTime)
         localMoveDirection.Normalize();
 
     Protocol::TransformData& transform = _owner.GetTransformData();
-    const Vec2 worldMoveDirection = RotateByYaw(localMoveDirection, transform.yaw() + 180.f);
+    const Vec2 worldMoveDirection = MathUtils::RotateByYaw(localMoveDirection, transform.yaw() + 180.f);
 
     const float maxSpeed = _owner.GetKey(KEY_TYPE::LSHIFT) ? _sprintSpeed : _moveSpeed;
     const Vec2 desiredVelocity = worldMoveDirection * maxSpeed;
@@ -113,16 +88,16 @@ void PlayerMoveState::Move(float deltaTime)
 
     Protocol::Vec2* protocolVelocity = _owner.GetTransformData().mutable_velocity();
     Vec2 velocity = Vec2(protocolVelocity->x(), protocolVelocity->y());
-    velocity = MoveTowards(velocity, desiredVelocity, rate * deltaTime);
+    velocity = MathUtils::MoveTowards(velocity, desiredVelocity, rate * deltaTime);
 
     Protocol::Vec3* position = transform.mutable_pos();
     position->set_x(position->x() + velocity.x * deltaTime);
     position->set_z(position->z() + velocity.y * deltaTime);
 
-    const Vec2 localVelocity = InverseRotateByYaw(velocity, transform.yaw());
-    Protocol::Vec2* blendInput = transform.mutable_blendinput();
-    blendInput->set_x(-localVelocity.x / _moveSpeed);
-    blendInput->set_y(-localVelocity.y / _moveSpeed);
+    const Vec2 localVelocity = MathUtils::InverseRotateByYaw(velocity, transform.yaw());
+    //Protocol::Vec2* blendInput = transform.mutable_blendinput();
+    //blendInput->set_x(-localVelocity.x / _moveSpeed);
+    //blendInput->set_y(-localVelocity.y / _moveSpeed);
 
     protocolVelocity->set_x(velocity.x);
     protocolVelocity->set_y(velocity.y);
