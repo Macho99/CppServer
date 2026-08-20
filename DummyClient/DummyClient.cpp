@@ -77,10 +77,10 @@ int main()
 
     this_thread::sleep_for(1s);
     {
-        Protocol::C_LOGIN loginPkt;
-        loginPkt.set_name(u8"DummyPlayer1");
-        SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(loginPkt);
-        service->Broadcast(sendBuffer);
+        Protocol::C_SPAWN_MONSTER spawnPkt;
+        spawnPkt.set_spawnlevel(1);
+        SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(spawnPkt);
+        serverSession->Send(sendBuffer);
     }
 
     GThreadManager->Join();

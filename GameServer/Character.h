@@ -91,6 +91,9 @@ public:
 
         if (!hadCurrentState || _stateMachine.GetCurrentState() != previousState)
             _stateChanged = true;
+
+        cout << "Character::ChangeState : Character ID " << _id << " changed state from "
+            << static_cast<int32>(previousState) << " to " << static_cast<int32>(state) << endl;
     }
 
     TStateType GetState() const { return _stateMachine.GetCurrentState(); }

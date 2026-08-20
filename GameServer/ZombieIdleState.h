@@ -12,6 +12,16 @@ public:
     void Exit() override;
 
 private:
+    bool TrySetPatrolTarget();
+
+private:
     Zombie& _owner;
+    float _leftDecisionTime = 0.f;
+
+    static constexpr float MinDecisionInterval = 2.f;
+    static constexpr float MaxDecisionInterval = 10.f;
+    static constexpr float MinPatrolRadius = 5.f;
+    static constexpr float MaxPatrolRadius = 12.f;
+    static constexpr int MaxPatrolPositionAttempts = 8;
 };
 

@@ -14,6 +14,7 @@ message S_LOGIN
 	bool success = 1;
 	Player myPlayer = 2;
 	repeated Player otherPlayers = 3;
+	repeated Monster monsters = 4;
 }
 
 message S_PLAYER_ENTER
@@ -58,6 +59,12 @@ message S_MONSTER_MOVE
 	repeated TransformData transforms = 1;
 }
 
+message S_MONSTER_ANIMATION
+{
+	uint64 monsterId = 1;
+	uint32 animationIndex = 2;
+}
+
 message S_MONSTER_DESPAWN
 {
 	repeated uint64 monsterIds = 1;
@@ -77,4 +84,9 @@ message S_CHAT
 {
 	uint64 playerId = 1;
 	string msg = 2;
+}
+
+message C_SPAWN_MONSTER
+{
+	int32 spawnLevel = 1;
 }

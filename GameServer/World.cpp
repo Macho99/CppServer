@@ -9,6 +9,8 @@
 #include "NavMeshQuery.h"
 #include "NavFileUtils.h"
 #include "MathUtils.h"
+#include "Zombie.h"
+#include "ProtocolUtils.h"
 
 shared_ptr<World> GWorld = make_shared<World>();
 
@@ -38,8 +40,18 @@ void World::Enter(PlayerRef newPlayer)
 			otherPlayerData->set_name(otherPlayer->GetName());
 		}
 
+        for (auto& zombiePair : _zombies)
+        {
+            Zombie* zombie = zombiePair.second.get();
+            Protocol::Monster* monsterData = loginPkt.add_monsters();
+            monsterData->set_id(zombie->GetId());
+            monsterData->mutable_transform()->CopyFrom(zombie->GetTransformData());
+        }
+
 		auto sendBuffer = ClientPacketHandler::MakeSendBuffer(loginPkt);
-		newPlayer->GetOwnerSession()->Send(sendBuffer);
+        shared_ptr<GameSession> ownerSession = newPlayer->GetOwnerSession();
+        if (ownerSession)
+            ownerSession->Send(sendBuffer);
 	}
 
 	{
@@ -64,7 +76,11 @@ void World::Leave(PlayerRef player)
     for (auto& p : _players)
     {
         if (p.second->GetId() != player->GetId())
-            p.second->GetOwnerSession()->Send(sendBuffer);
+        {
+            shared_ptr<GameSession> ownerSession = p.second->GetOwnerSession();
+            if (ownerSession)
+                ownerSession->Send(sendBuffer);
+        }
     }
 
 	_players.erase(player->GetId());
@@ -74,7 +90,9 @@ void World::Broadcast(SendBufferRef sendBuffer)
 {
 	for (auto& p : _players)
 	{
-		p.second->GetOwnerSession()->Send(sendBuffer);
+        shared_ptr<GameSession> ownerSession = p.second->GetOwnerSession();
+        if (ownerSession)
+            ownerSession->Send(sendBuffer);
 	}
 }
 
@@ -95,6 +113,58 @@ bool World::ValidatePosition(ValidatePositionInfo& info) const
     if (_navMeshBuilder.IsBuilt() == false)
         return false;
     return _navMeshBuilder.ValidatePosition(info);
+}
+
+void World::SpawnMonster(const Protocol::C_SPAWN_MONSTER pkt)
+{
+    static uint64 monsterIdGenerator = 1;
+
+    Bounds bounds = _navMeshBuilder.GetBounds();
+    const Vec3 spawnPoint = GetSpawnPoint();
+
+    int spawnCount = 0;
+
+    vector<Zombie*> spawnedZombies;
+    Protocol::S_MONSTER_SPAWN spawnPkt;
+    for (int i = 0; i < pkt.spawnlevel(); i++)
+    {
+        bool canSpawn = false;
+        Vec3 validPos;
+        for (int tryCount = 0; tryCount < 10; tryCount++)
+        {
+            Vec2 randomPos;
+            randomPos.x = MathUtils::Random(bounds.bmin.x, bounds.bmax.x);
+            randomPos.y = MathUtils::Random(bounds.bmin.z, bounds.bmax.z);
+
+            if (_navMeshBuilder.CanMoveAt(randomPos, spawnPoint, validPos))
+            {
+                canSpawn = true;
+                break;
+            }
+        }
+
+        if (canSpawn == false)
+            continue;
+
+        spawnCount++;
+        const uint64 monsterId = monsterIdGenerator++;
+        unique_ptr<Zombie> zombie = make_unique<Zombie>(monsterId);
+        Protocol::TransformData& transformData = zombie->GetTransformData();
+        transformData.mutable_pos()->CopyFrom(ProtocolUtils::ToProtocolVec3(validPos));
+        spawnedZombies.push_back(zombie.get());
+        _zombies.emplace(monsterId, std::move(zombie));
+
+        Protocol::Monster* monsterData = spawnPkt.add_monsters();
+        monsterData->set_id(monsterId);
+        monsterData->mutable_transform()->CopyFrom(transformData);
+    }
+    Broadcast(ClientPacketHandler::MakeSendBuffer(spawnPkt));
+    cout << "SpawnMonster : " << spawnCount << " monsters spawned." << endl;
+
+    for (Zombie* zombie : spawnedZombies)
+    {
+        zombie->PlaySpawnAnimation();
+    }
 }
 
 void World::LoadNavMesh(const fs::path& navPath)
@@ -147,22 +217,45 @@ void World::LoadAnimationData(const fs::path& animDataPath)
 void World::Update()
 {
     const uint64 curTick = ::GetTickCount64();
-    float delta = static_cast<float>(curTick - _lastUpdateTick) * 0.001f;
+    const float delta = _lastUpdateTick == 0
+        ? 0.f
+        : static_cast<float>(curTick - _lastUpdateTick) * 0.001f;
+
+    cout << "World::Update : delta = " << delta << " seconds" << endl;
 
 	for (auto& playerPair : _players)
 	{
         playerPair.second->Update(delta);
 	}
 
-    Protocol::S_PLAYER_MOVE movePkt;
-    for (auto& playerPair : _players)
+    for (auto& zombiePair : _zombies)
     {
-        PlayerRef player = playerPair.second;
-        Protocol::TransformData* transformData = movePkt.add_transforms();
-        transformData->CopyFrom(player->GetTransformData());
+        zombiePair.second->Update(delta);
     }
-    SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(movePkt);
-    Broadcast(sendBuffer);
+
+    if (_players.empty() == false)
+    {
+        Protocol::S_PLAYER_MOVE movePkt;
+        for (auto& playerPair : _players)
+        {
+            PlayerRef player = playerPair.second;
+            Protocol::TransformData* transformData = movePkt.add_transforms();
+            transformData->CopyFrom(player->GetTransformData());
+        }
+        SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(movePkt);
+        Broadcast(sendBuffer);
+    }
+
+    if (_zombies.empty() == false)
+    {
+        Protocol::S_MONSTER_MOVE monsterMovePkt;
+        for (const auto& zombiePair : _zombies)
+        {
+            Protocol::TransformData* transformData = monsterMovePkt.add_transforms();
+            transformData->CopyFrom(zombiePair.second->GetTransformData());
+        }
+        Broadcast(ClientPacketHandler::MakeSendBuffer(monsterMovePkt));
+    }
 
     GWorld->DoTimer(50, &World::Update);
     _lastUpdateTick = curTick;
@@ -190,14 +283,17 @@ const AnimationClipData& World::GetPlayerAnimationClipData(int32 clipIndex) cons
     ASSERT_CRASH(false, "Animation Clip Not Found");
 }
 
-const AnimationClipData& World::GetZombieAnimationClipData(const string& clipName) const
+const AnimationClipData& World::GetZombieAnimationClipData(const string& clipName, int& clipIdx) const
 {
-    for (const AnimationClipData& clipData : _zombieAnimData.clips)
+    for (int idx = 0; idx < _zombieAnimData.clips.size(); idx++)
     {
+        const AnimationClipData& clipData = _zombieAnimData.clips[idx];
         if (clipData.clipName == clipName)
+        {
+            clipIdx = idx;
             return clipData;
+        }
     }
-
     ASSERT_CRASH(false, "Animation Clip Not Found");
 }
 
@@ -207,4 +303,50 @@ const AnimationClipData& World::GetZombieAnimationClipData(int32 clipIndex) cons
         return _zombieAnimData.clips[clipIndex];
 
     ASSERT_CRASH(false, "Animation Clip Not Found");
+}
+
+const Player* World::GetPlayerById(uint64 playerId) const
+{
+    auto it = _players.find(playerId);
+    if (it != _players.end())
+        return it->second.get();
+    return nullptr;
+}
+
+const Player* World::FindClosestPlayerInView(
+    const Vec3& position,
+    float yaw,
+    float maxDistance,
+    float fieldOfView) const
+{
+    const Player* closestPlayer = nullptr;
+    float closestDistanceSquared = maxDistance * maxDistance;
+    const float yawRadians = yaw * PI / 180.f;
+    const Vec3 forward(sinf(yawRadians), 0.f, cosf(yawRadians));
+    const float halfFieldOfView = std::clamp(fieldOfView, 0.f, 360.f) * 0.5f;
+    const float minViewDot = cosf(halfFieldOfView * PI / 180.f);
+
+    for (const auto& playerPair : _players)
+    {
+        const Player* player = playerPair.second.get();
+        const Vec3 playerPosition = ProtocolUtils::ToVec3(player->GetTransformData().pos());
+        const float distanceSquared = Vec3::DistanceSquared(position, playerPosition);
+        if (distanceSquared > closestDistanceSquared)
+            continue;
+
+        Vec3 direction = playerPosition - position;
+        direction.y = 0.f;
+        const float directionLengthSquared = direction.LengthSquared();
+        if (directionLengthSquared > kEps)
+        {
+            direction /= sqrtf(directionLengthSquared);
+            if (forward.Dot(direction) < minViewDot)
+                continue;
+        }
+
+        closestDistanceSquared = distanceSquared;
+        closestPlayer = player;
+    }
+
+    return closestPlayer;
 }

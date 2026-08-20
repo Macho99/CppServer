@@ -3,6 +3,7 @@
 #include "PlayerIdleState.h"
 #include "PlayerMoveState.h"
 #include "PlayerAnimationState.h"
+#include "ProtocolUtils.h"
 
 Player::Player(uint64 playerId, string name, weak_ptr<GameSession> ownerSession)
     : Super(playerId), _name(name), _ownerSession(ownerSession)
@@ -10,9 +11,7 @@ Player::Player(uint64 playerId, string name, weak_ptr<GameSession> ownerSession)
     _inputKeyStates.resize(KEY_TYPE_COUNT, KEY_STATE::NONE);
 
     Protocol::Vec3* position = _transformData.mutable_pos();
-    position->set_x(-7.f);
-    position->set_y(7.75f);
-    position->set_z(132.9f);
+    position->CopyFrom(ProtocolUtils::ToProtocolVec3(GWorld->GetSpawnPoint()));
 
     _stateMachine.AddState(PLAYER_STATE::IDLE, std::make_unique<PlayerIdleState>(*this));
     _stateMachine.AddState(PLAYER_STATE::MOVE, std::make_unique<PlayerMoveState>(*this));

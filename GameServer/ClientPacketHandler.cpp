@@ -63,3 +63,8 @@ bool Handle_C_CHAT(PacketSessionRef& session, Protocol::C_CHAT& pkt)
 	return true;
 }
 
+bool Handle_C_SPAWN_MONSTER(PacketSessionRef& session, Protocol::C_SPAWN_MONSTER& pkt)
+{
+    GWorld->DoAsync(&World::SpawnMonster, pkt);
+    return true;
+}

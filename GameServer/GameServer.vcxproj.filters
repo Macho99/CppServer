@@ -72,7 +72,16 @@
     <ClCompile Include="Character.cpp">
       <Filter>GameContents</Filter>
     </ClCompile>
+    <ClCompile Include="AnimationState.cpp">
+      <Filter>GameContents</Filter>
+    </ClCompile>
     <ClCompile Include="ZombieIdleState.cpp">
+      <Filter>GameContents\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="ZombieAnimationState.cpp">
+      <Filter>GameContents\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="ZombieMoveState.cpp">
       <Filter>GameContents\Monster</Filter>
     </ClCompile>
   </ItemGroup>
@@ -128,7 +137,16 @@
     <ClInclude Include="Character.h">
       <Filter>GameContents</Filter>
     </ClInclude>
+    <ClInclude Include="AnimationState.h">
+      <Filter>GameContents</Filter>
+    </ClInclude>
     <ClInclude Include="ZombieIdleState.h">
+      <Filter>GameContents\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="ZombieAnimationState.h">
+      <Filter>GameContents\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="ZombieMoveState.h">
       <Filter>GameContents\Monster</Filter>
     </ClInclude>
   </ItemGroup>

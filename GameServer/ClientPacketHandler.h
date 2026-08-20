@@ -15,9 +15,11 @@ enum : uint16
 	PKT_S_PLAYER_MOVE = 1006,
 	PKT_S_MONSTER_SPAWN = 1007,
 	PKT_S_MONSTER_MOVE = 1008,
-	PKT_S_MONSTER_DESPAWN = 1009,
-	PKT_C_CHAT = 1010,
-	PKT_S_CHAT = 1011,
+	PKT_S_MONSTER_ANIMATION = 1009,
+	PKT_S_MONSTER_DESPAWN = 1010,
+	PKT_C_CHAT = 1011,
+	PKT_S_CHAT = 1012,
+	PKT_C_SPAWN_MONSTER = 1013,
 };
 
 // Custom Handlers
@@ -25,6 +27,7 @@ bool Handle_INVALID(PacketSessionRef& session, BYTE* buffer, int32 len);
 bool Handle_C_LOGIN(PacketSessionRef& session, Protocol::C_LOGIN& pkt);
 bool Handle_C_PLAYER_INPUT(PacketSessionRef& session, Protocol::C_PLAYER_INPUT& pkt);
 bool Handle_C_CHAT(PacketSessionRef& session, Protocol::C_CHAT& pkt);
+bool Handle_C_SPAWN_MONSTER(PacketSessionRef& session, Protocol::C_SPAWN_MONSTER& pkt);
 
 class ClientPacketHandler
 {
@@ -36,6 +39,7 @@ public:
 		GPacketHandler[PKT_C_LOGIN] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::C_LOGIN>(Handle_C_LOGIN, session, buffer, len); };
 		GPacketHandler[PKT_C_PLAYER_INPUT] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::C_PLAYER_INPUT>(Handle_C_PLAYER_INPUT, session, buffer, len); };
 		GPacketHandler[PKT_C_CHAT] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::C_CHAT>(Handle_C_CHAT, session, buffer, len); };
+		GPacketHandler[PKT_C_SPAWN_MONSTER] = [](PacketSessionRef& session, BYTE* buffer, int32 len) { return HandlePacket<Protocol::C_SPAWN_MONSTER>(Handle_C_SPAWN_MONSTER, session, buffer, len); };
 	}
 
 	static bool HandlePacket(PacketSessionRef& session, BYTE* buffer, int32 len)
@@ -50,6 +54,7 @@ public:
 	static SendBufferRef MakeSendBuffer(Protocol::S_PLAYER_MOVE& pkt) { return MakeSendBuffer(pkt, PKT_S_PLAYER_MOVE); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_MONSTER_SPAWN& pkt) { return MakeSendBuffer(pkt, PKT_S_MONSTER_SPAWN); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_MONSTER_MOVE& pkt) { return MakeSendBuffer(pkt, PKT_S_MONSTER_MOVE); }
+	static SendBufferRef MakeSendBuffer(Protocol::S_MONSTER_ANIMATION& pkt) { return MakeSendBuffer(pkt, PKT_S_MONSTER_ANIMATION); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_MONSTER_DESPAWN& pkt) { return MakeSendBuffer(pkt, PKT_S_MONSTER_DESPAWN); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_CHAT& pkt) { return MakeSendBuffer(pkt, PKT_S_CHAT); }
 
