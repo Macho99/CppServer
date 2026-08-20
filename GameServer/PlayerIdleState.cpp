@@ -8,6 +8,11 @@ void PlayerIdleState::Enter()
 
 void PlayerIdleState::Update(float deltaTime)
 {
+    if (TryPlayAttackAnimation())
+    {
+        return;
+    }
+
     if (_owner.IsMoving())
     {
         _owner.ChangeState(PLAYER_STATE::MOVE);

@@ -86,7 +86,7 @@ void World::PlayerInput(PlayerRef player, Protocol::C_PLAYER_INPUT pkt)
         KEY_TYPE keyType = static_cast<KEY_TYPE>(pkt.inputs(i).keytype());
         bool keyDown = pkt.inputs(i).down();
         player->SetKeyState(keyType, keyDown);
-        cout << "World::PlayerInput : " << (int)keyType << (keyDown ? "down" : "up") << endl;
+        cout << "World::PlayerInput " << player->GetName() << " : " << (int)keyType << (keyDown ? "down" : "up") << endl;
     }
 }
 
@@ -120,7 +120,8 @@ void World::LoadAnimationData(const fs::path& animDataPath)
         for (Vec3& rootPosition : clipData.positions)
         {
 			fileUtils.Read(rootPosition);
-            rootPosition = MathUtils::RotateByYaw(rootPosition, 180.f);
+            //rootPosition = MathUtils::RotateByYaw(rootPosition, 180.f);
+            rootPosition *= 0.01f;
         }
 
 		const uint32 eventCount = fileUtils.Read<uint32>();
@@ -140,11 +141,14 @@ void World::LoadAnimationData(const fs::path& animDataPath)
         _zombieAnimData = std::move(animationData);
 }
 
-void World::Update(float delta)
+void World::Update()
 {
+    const uint64 curTick = ::GetTickCount64();
+    float delta = static_cast<float>(curTick - _lastUpdateTick) * 0.001f;
+
 	for (auto& playerPair : _players)
 	{
-		playerPair.second->Update(delta);
+        playerPair.second->Update(delta);
 	}
 
     Protocol::S_PLAYER_MOVE movePkt;
@@ -157,15 +161,20 @@ void World::Update(float delta)
     SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(movePkt);
     Broadcast(sendBuffer);
 
-    GWorld->DoTimer(50, &World::Update, delta);
+    GWorld->DoTimer(50, &World::Update);
+    _lastUpdateTick = curTick;
 }
 
-const AnimationClipData& World::GetPlayerAnimationClipData(const string& clipName) const
+const AnimationClipData& World::GetPlayerAnimationClipData(const string& clipName, int& clipIdx) const
 {
-    for (const AnimationClipData& clipData : _playerAnimData.clips)
+    for (int idx = 0; idx < _playerAnimData.clips.size(); idx++)
     {
+        const AnimationClipData& clipData = _playerAnimData.clips[idx];
         if (clipData.clipName == clipName)
+        {
+            clipIdx = idx;
             return clipData;
+        }
     }
     ASSERT_CRASH(false, "Animation Clip Not Found");
 }

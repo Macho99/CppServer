@@ -12,6 +12,11 @@ void PlayerMoveState::Enter()
 
 void PlayerMoveState::Update(float deltaTime)
 {
+    if (TryPlayAttackAnimation())
+    {
+        return;
+    }
+
     const float curYaw = _owner.GetTransformData().yaw();
     float targetYaw = MathUtils::Lerp(curYaw, _owner.GetCameraYaw(), 0.7f);
     _owner.GetTransformData().set_yaw(targetYaw);

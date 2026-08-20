@@ -32,10 +32,11 @@ message C_PLAYER_INPUT
 	repeated Input inputs = 2;
 }
 
-//message C_PLAYER_ATTACK
-//{
-//	uint64 playerId = 1;
-//}
+message S_PLAYER_ANIMATION
+{
+	uint64 playerId = 1;
+	uint32 animationIndex = 2;
+}
 
 message S_PLAYER_MOVE
 {

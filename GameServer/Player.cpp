@@ -2,6 +2,7 @@
 #include "Player.h"
 #include "PlayerIdleState.h"
 #include "PlayerMoveState.h"
+#include "PlayerAnimationState.h"
 
 Player::Player(uint64 playerId, string name, weak_ptr<GameSession> ownerSession)
     : _playerId(playerId), _name(name), _ownerSession(ownerSession)
@@ -16,6 +17,7 @@ Player::Player(uint64 playerId, string name, weak_ptr<GameSession> ownerSession)
 
     _stateMachine.AddState(PLAYER_STATE::IDLE, std::make_unique<PlayerIdleState>(*this));
     _stateMachine.AddState(PLAYER_STATE::MOVE, std::make_unique<PlayerMoveState>(*this));
+    _stateMachine.AddState(PLAYER_STATE::ANIMATION, std::make_unique<PlayerAnimationState>(*this));
     _stateMachine.ChangeState(PLAYER_STATE::IDLE);
 }
 
@@ -42,6 +44,38 @@ bool Player::IsMoving() const
 
 void Player::Update(float deltaTime)
 {
+    _stateChanged = false;
     _stateMachine.Update(deltaTime);
+    if (_stateChanged)
+    {
+        _stateMachine.Update(deltaTime);
+    }
+
+    _stateChanged = false;
     _stateMachine.LateUpdate(deltaTime);
+    if (_stateChanged)
+    {
+        _stateMachine.LateUpdate(deltaTime);
+    }
+}
+
+void Player::PlayAnimation(PlayerAnimationRequest request)
+{
+    if (request.clipName.empty())
+        return;
+
+    request.playRate = max(request.playRate, 0.f);
+    if (request.returnState == PLAYER_STATE::ANIMATION)
+        request.returnState = PLAYER_STATE::IDLE;
+
+    _animationRequest = std::move(request);
+    ChangeState(PLAYER_STATE::ANIMATION);
+}
+
+void Player::ChangeState(PLAYER_STATE state)
+{
+    cout << "Player::ChangeState : " << _name << " to " << static_cast<int>(state) << endl;
+
+    _stateMachine.ChangeState(state);
+    _stateChanged = true;
 }

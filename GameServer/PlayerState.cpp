@@ -19,6 +19,27 @@ void PlayerState::DecelerateVelocity(float deltaTime)
     protocolVelocity->set_y(velocity.y);
 }
 
+bool PlayerState::TryPlayAttackAnimation() const
+{
+    string clipName = "";
+
+    if (_owner.GetInputKey(KEY_TYPE::LBUTTON))
+        clipName = "sword and shield slash";
+    else if (_owner.GetInputKey(KEY_TYPE::R))
+        clipName = "sword and shield slash (2)";
+    else
+        return false;
+
+    PlayerAnimationRequest request;
+    request.clipName = clipName;
+    request.returnState = PLAYER_STATE::IDLE;
+    request.playRate = 1.f;
+    request.applyRootMotion = true;
+    _owner.PlayAnimation(std::move(request));
+
+    return true;
+}
+
 void PlayerState::LateUpdate(float delta)
 {
     Super::LateUpdate(delta);

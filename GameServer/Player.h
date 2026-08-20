@@ -57,6 +57,15 @@ enum class PLAYER_STATE
 {
     IDLE,
     MOVE,
+    ANIMATION,
+};
+
+struct PlayerAnimationRequest
+{
+    string clipName;
+    PLAYER_STATE returnState = PLAYER_STATE::IDLE;
+    float playRate = 1.f;
+    bool applyRootMotion = true;
 };
 
 class GameSession;
@@ -71,7 +80,8 @@ public:
     bool GetInputKey(KEY_TYPE keyType) const;
 	bool IsMoving() const;
 	void Update(float deltaTime);
-	void ChangeState(PLAYER_STATE state) { _stateMachine.ChangeState(state); }
+	void PlayAnimation(PlayerAnimationRequest request);
+	void ChangeState(PLAYER_STATE state);
 
     uint64 GetPlayerId() const { return _playerId; }
     string GetName() const { return _name; }
@@ -82,6 +92,7 @@ public:
     void SetCameraYaw(float yaw) { _cameraYaw = yaw; }
     float GetCameraYaw() const { return _cameraYaw; }
     ValidatePositionInfo& GetValidatePositionInfo() { return _validatePositionInfo; }
+    const PlayerAnimationRequest& GetAnimationRequest() const { return _animationRequest; }
 
 private:
 	uint64 _playerId = 0;
@@ -91,9 +102,12 @@ private:
     vector<KEY_STATE> _inputKeyStates;
 	StateMachine<PLAYER_STATE> _stateMachine;
 
-	ValidatePositionInfo _validatePositionInfo;
+    ValidatePositionInfo _validatePositionInfo;
+    PlayerAnimationRequest _animationRequest;
 
     float _cameraYaw = 0.f;
     Protocol::TransformData _transformData;
+	
+    bool _stateChanged = false;
 };
 

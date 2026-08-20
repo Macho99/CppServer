@@ -36,8 +36,8 @@ public:
 public:
     void LoadNavMesh(const fs::path& navPath);
     void LoadAnimationData(const fs::path& animDataPath);
-	void Update(float delta);
-    const AnimationClipData& GetPlayerAnimationClipData(const string& clipName) const;
+	void Update();
+    const AnimationClipData & GetPlayerAnimationClipData(const string& clipName, int& clipIdx) const;
     const AnimationClipData& GetPlayerAnimationClipData(int32 clipIndex) const;
     const AnimationClipData& GetZombieAnimationClipData(const string& clipName) const;
     const AnimationClipData& GetZombieAnimationClipData(int32 clipIndex) const;
@@ -47,6 +47,8 @@ private:
     NavMeshBuilder _navMeshBuilder;
     AnimationData _playerAnimData;
     AnimationData _zombieAnimData;
+
+    uint64 _lastUpdateTick = 0;
 };
 
 extern shared_ptr<World> GWorld;
