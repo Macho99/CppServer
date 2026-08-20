@@ -37,6 +37,32 @@ void DoWorkerJob(ServerServiceRef& service)
 	}
 }
 
+void LoadClientData()
+{
+    const fs::path folderPath = L"..\\ClientData";
+	for (const auto& entry : fs::directory_iterator(folderPath))
+	{
+		if (!entry.is_regular_file())
+			continue;
+
+        const fs::path& entryPath = entry.path();
+        const fs::path& extension = entryPath.extension();
+		if (extension == ".nav")
+		{
+			GWorld->LoadNavMesh(entryPath);
+			cout << "NavMesh Loaded..." << entryPath << endl;
+			continue;
+		}
+
+		if (extension == ".animData")
+		{
+            GWorld->LoadAnimationData(entryPath);
+            cout << "AnimationData Loaded..." << entryPath << endl;
+		}
+	}
+
+}
+
 int main()
 {
 	//ASSERT_CRASH(GDBConnectionPool->Connect(1, L"Driver={SQL Server Native Client 11.0};Server=(localdb)\\MSSQLLocalDB;Database=ServerDb;Trusted_Connection=Yes;"));
@@ -237,8 +263,8 @@ int main()
 		100
 	);
 
-    GWorld->LoadNavMesh(L"..\\..\\GameCoding\\Assets\\Rural_Cabin50.nav");
-    cout << "NavMesh Loaded..." << endl;
+	LoadClientData();
+
 	ASSERT_CRASH(service->Start());
     cout << "Server Start..." << endl;
 	GWorld->DoTimer(50, &World::Update, 0.05f);

@@ -7,6 +7,8 @@
 #include "PolyMeshField.h"
 #include "DetailMeshField.h"
 #include "NavMeshQuery.h"
+#include "NavFileUtils.h"
+#include "MathUtils.h"
 
 shared_ptr<World> GWorld = make_shared<World>();
 
@@ -98,6 +100,44 @@ bool World::ValidatePosition(ValidatePositionInfo& info) const
 void World::LoadNavMesh(const fs::path& navPath)
 {
     _navMeshBuilder.LoadFromFile(navPath);
+}
+
+void World::LoadAnimationData(const fs::path& animDataPath)
+{
+	NavFileUtils fileUtils;
+	fileUtils.Open(animDataPath.wstring(), NavFileMode::Read);
+
+    AnimationData animationData;
+	const uint32 clipCount = fileUtils.Read<uint32>();
+
+	for (uint32 savedClipIndex = 0; savedClipIndex < clipCount; ++savedClipIndex)
+	{
+        AnimationClipData clipData;
+
+		clipData.clipName = fileUtils.Read<string>();
+		const uint32 frameCount = fileUtils.Read<uint32>();
+        clipData.positions.resize(frameCount);
+        for (Vec3& rootPosition : clipData.positions)
+        {
+			fileUtils.Read(rootPosition);
+            rootPosition = MathUtils::RotateByYaw(rootPosition, 180.f);
+        }
+
+		const uint32 eventCount = fileUtils.Read<uint32>();
+        clipData.events.resize(eventCount);
+		for (ClipEventData& clipEventData : clipData.events)
+		{
+			fileUtils.Read(clipEventData.eventName);
+			fileUtils.Read(clipEventData.frame);
+		}
+
+        animationData.clips.push_back(std::move(clipData));
+	}
+
+    if (animDataPath.stem().string() == "Player")
+        _playerAnimData = std::move(animationData);
+    else if (animDataPath.stem().string() == "Zombie")
+        _zombieAnimData = std::move(animationData);
 }
 
 void World::Update(float delta)
