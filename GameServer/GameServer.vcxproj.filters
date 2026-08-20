@@ -60,9 +60,6 @@
     <ClCompile Include="PlayerMoveState.cpp">
       <Filter>GameContents\Player</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerState.cpp">
-      <Filter>GameContents\Player</Filter>
-    </ClCompile>
     <ClCompile Include="ProtocolUtils.cpp">
       <Filter>Protocol</Filter>
     </ClCompile>
@@ -74,6 +71,9 @@
     </ClCompile>
     <ClCompile Include="Character.cpp">
       <Filter>GameContents</Filter>
+    </ClCompile>
+    <ClCompile Include="ZombieIdleState.cpp">
+      <Filter>GameContents\Monster</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -116,9 +116,6 @@
     <ClInclude Include="PlayerIdleState.h">
       <Filter>GameContents\Player</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerState.h">
-      <Filter>GameContents\Player</Filter>
-    </ClInclude>
     <ClInclude Include="ProtocolUtils.h">
       <Filter>Protocol</Filter>
     </ClInclude>
@@ -130,6 +127,9 @@
     </ClInclude>
     <ClInclude Include="Character.h">
       <Filter>GameContents</Filter>
+    </ClInclude>
+    <ClInclude Include="ZombieIdleState.h">
+      <Filter>GameContents\Monster</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

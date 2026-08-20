@@ -8,7 +8,7 @@ void PlayerIdleState::Enter()
 
 void PlayerIdleState::Update(float deltaTime)
 {
-    if (TryPlayAttackJumpAnimation())
+    if (_owner.TryPlayAttackJumpAnimation())
     {
         return;
     }
@@ -19,7 +19,7 @@ void PlayerIdleState::Update(float deltaTime)
         return;
     }
 
-    DecelerateVelocity(deltaTime);
+    _owner.DecelerateVelocity(deltaTime);
 }
 
 void PlayerIdleState::Exit()

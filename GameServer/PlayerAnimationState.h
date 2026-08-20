@@ -1,14 +1,13 @@
 #pragma once
 
-#include "PlayerState.h"
 #include "Player.h"
 
 struct AnimationClipData;
 
-class PlayerAnimationState : public PlayerState
+class PlayerAnimationState : public IState
 {
 public:
-    explicit PlayerAnimationState(Player& owner) : PlayerState(owner) {}
+    explicit PlayerAnimationState(Player& owner) : _owner(owner) {}
 
     void Enter() override;
     void Update(float deltaTime) override;
@@ -21,6 +20,7 @@ private:
     Vec3 SampleRootPosition(float elapsedTime) const;
 
 private:
+    Player& _owner;
     const AnimationClipData* _currentClipData = nullptr;
     float _previousElapsedTime = 0.f;
     float _elapsedTime = 0.f;

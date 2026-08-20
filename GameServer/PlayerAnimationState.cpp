@@ -33,7 +33,7 @@ void PlayerAnimationState::Enter()
 
 void PlayerAnimationState::Update(float deltaTime)
 {
-    DecelerateVelocity(deltaTime);
+    _owner.DecelerateVelocity(deltaTime);
 
     if (deltaTime <= 0.f || _currentClipData == nullptr || _clipDuration <= 0.f)
         return;

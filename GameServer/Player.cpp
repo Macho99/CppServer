@@ -41,6 +41,25 @@ bool Player::IsMovingInput() const
         GetInputKey(KEY_TYPE::S) || GetInputKey(KEY_TYPE::D);
 }
 
-void Player::Update(float deltaTime)
+bool Player::TryPlayAttackJumpAnimation()
 {
+    string clipName;
+
+    if (GetInputKey(KEY_TYPE::LBUTTON))
+        clipName = "sword and shield slash";
+    else if (GetInputKey(KEY_TYPE::R))
+        clipName = "sword and shield slash (2)";
+    else if (GetInputKey(KEY_TYPE::SPACE))
+        clipName = "sword and shield jump";
+    else
+        return false;
+
+    AnimationRequest<PLAYER_STATE> request;
+    request.clipName = std::move(clipName);
+    request.returnState = PLAYER_STATE::IDLE;
+    request.playRate = 1.f;
+    request.applyRootMotion = true;
+    PlayAnimation(std::move(request));
+
+    return true;
 }

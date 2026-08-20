@@ -1,11 +1,11 @@
 #pragma once
 
-#include "PlayerState.h"
+#include "Player.h"
 
-class PlayerMoveState : public PlayerState
+class PlayerMoveState : public IState
 {
 public:
-    explicit PlayerMoveState(Player& owner) : PlayerState(owner) {}
+    explicit PlayerMoveState(Player& owner) : _owner(owner) {}
 
     void Enter() override;
     void Update(float deltaTime) override;
@@ -14,6 +14,7 @@ public:
     void Move(float deltaTime);
 
 private:
+    Player& _owner;
     float _moveSpeed = 2.5f;
     float _sprintSpeed = 5.f;
     float _acceleration = 20.f;

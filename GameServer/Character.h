@@ -2,6 +2,9 @@
 
 #include "StateMachine.h"
 #include "NavTypes.h"
+#include "MathUtils.h"
+#include "ProtocolUtils.h"
+#include "World.h"
 
 template<typename TStateType>
 struct AnimationRequest
@@ -41,12 +44,29 @@ public:
         {
             _stateMachine.LateUpdate(deltaTime);
         }
+
+        ValidatePosition();
     }
 
     Protocol::TransformData& GetTransformData() { return _transformData; }
     const Protocol::TransformData& GetTransformData() const { return _transformData; }
     ValidatePositionInfo& GetValidatePositionInfo() { return _validatePositionInfo; }
     const AnimationRequest<TStateType>& GetAnimationRequest() const { return _animationRequest; }
+
+    void DecelerateVelocity(float deltaTime)
+    {
+        if (deltaTime <= 0.f)
+            return;
+
+        Protocol::Vec2* protocolVelocity = _transformData.mutable_velocity();
+        Vec2 velocity(protocolVelocity->x(), protocolVelocity->y());
+        constexpr float Deceleration = 5.f;
+        velocity = MathUtils::MoveTowards(
+            velocity, Vec2(0.f, 0.f), deltaTime * Deceleration);
+
+        protocolVelocity->set_x(velocity.x);
+        protocolVelocity->set_y(velocity.y);
+    }
 
     void PlayAnimation(AnimationRequest<TStateType> request)
     {
@@ -81,6 +101,18 @@ protected:
     bool _stateChanged = false;
 
 private:
+    void ValidatePosition()
+    {
+        _validatePositionInfo.curPosition = ProtocolUtils::ToVec3(_transformData.pos());
+        if (!GWorld->ValidatePosition(_validatePositionInfo))
+            return;
+
+        Protocol::Vec3* position = _transformData.mutable_pos();
+        const Protocol::Vec3 remappedPosition =
+            ProtocolUtils::ToProtocolVec3(_validatePositionInfo.validatedPosition);
+        position->CopyFrom(remappedPosition);
+    }
+
     uint64 _id;
     ValidatePositionInfo _validatePositionInfo;
     AnimationRequest<TStateType> _animationRequest;

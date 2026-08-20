@@ -71,7 +71,7 @@ public:
 	void SetKeyState(KEY_TYPE keyType, bool keyDown);
     bool GetInputKey(KEY_TYPE keyType) const;
 	bool IsMovingInput() const;
-    virtual void Update(float deltaTime) override;
+    bool TryPlayAttackJumpAnimation();
 
     string GetName() const { return _name; }
     shared_ptr<GameSession> GetOwnerSession() const { return _ownerSession.lock(); }

@@ -12,7 +12,7 @@ void PlayerMoveState::Enter()
 
 void PlayerMoveState::Update(float deltaTime)
 {
-    if (TryPlayAttackJumpAnimation())
+    if (_owner.TryPlayAttackJumpAnimation())
     {
         return;
     }
