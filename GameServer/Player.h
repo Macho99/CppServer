@@ -92,7 +92,7 @@ private:
     vector<KEY_STATE> _inputKeyStates;
     float _cameraYaw = 0.f;
 
-    static constexpr float AttackDistance = 1.f;
-    static constexpr float AttackAngle = 60.f;
+    static constexpr float AttackDistance = 2.f;
+    static constexpr float AttackAngle = 120.f;
 };
 

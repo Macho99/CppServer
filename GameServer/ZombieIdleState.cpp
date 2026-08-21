@@ -25,7 +25,7 @@ void ZombieIdleState::Update(float deltaTime)
         return;
 
     const float random = MathUtils::Random(0.f, 1.f);
-    if (random < 0.2f && TrySetPatrolTarget())
+    if (random < 0.5f && TrySetPatrolTarget())
     {
         _owner.ChangeState(ZOMBIE_STATE::MOVE);
         return;
