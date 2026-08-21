@@ -57,6 +57,7 @@ enum class PLAYER_STATE
     IDLE,
     MOVE,
     ANIMATION,
+	DEAD,
 };
 
 class GameSession;
@@ -72,11 +73,17 @@ public:
     bool GetInputKey(KEY_TYPE keyType) const;
 	bool IsMovingInput() const;
     bool TryPlayAttackJumpAnimation();
+    void Attack(int32 damage);
+
+    float GetAttackDistance() const { return AttackDistance; }
+    float GetAttackAngle() const { return AttackAngle; }
 
     string GetName() const { return _name; }
     shared_ptr<GameSession> GetOwnerSession() const { return _ownerSession.lock(); }
     void SetCameraYaw(float yaw) { _cameraYaw = yaw; }
     float GetCameraYaw() const { return _cameraYaw; }
+
+    virtual void PlayDeadAnimation() override;
 
 private:
 	string _name;
@@ -84,5 +91,8 @@ private:
 
     vector<KEY_STATE> _inputKeyStates;
     float _cameraYaw = 0.f;
+
+    static constexpr float AttackDistance = 1.f;
+    static constexpr float AttackAngle = 60.f;
 };
 

@@ -47,12 +47,10 @@ void ZombieMoveState::Update(float deltaTime)
             if (directionLengthSquared > kEps)
                 directionToPlayer /= sqrtf(directionLengthSquared);
 
-            const Vec3 forwardDirection = MathUtils::RotateByYaw(
-                Vec3::Forward,
-                _owner.GetTransformData().yaw());
-            const float minAttackDot = cosf(30.f * PI / 180.f);
-            if (directionLengthSquared > kEps &&
-                directionToPlayer.Dot(forwardDirection) < minAttackDot)
+            if (!_owner.IsInRangeAndAngle(
+                targetPlayerPos,
+                _owner.GetAttackDistance(),
+                _owner.GetAttackAngle()))
             {
                 const float targetYaw = MathUtils::GetYawFromDirection(directionToPlayer) + 180.f;
                 const float nextYaw = MathUtils::MoveTowardsAngle(

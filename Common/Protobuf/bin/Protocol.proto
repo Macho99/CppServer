@@ -35,8 +35,7 @@ message C_PLAYER_INPUT
 
 message S_PLAYER_ANIMATION
 {
-	uint64 playerId = 1;
-	uint32 animationIndex = 2;
+	AnimationData animationData = 1;
 }
 
 message S_PLAYER_MOVE
@@ -44,10 +43,10 @@ message S_PLAYER_MOVE
 	repeated TransformData transforms = 1;
 }
 
-//message S_PLAYER_HP_CHANGE
-//{
-//	repeated HealthData healths = 1;
-//}
+message S_PLAYER_HP_CHANGE
+{
+	repeated HealthData healths = 1;
+}
 
 message S_MONSTER_SPAWN
 {
@@ -61,8 +60,7 @@ message S_MONSTER_MOVE
 
 message S_MONSTER_ANIMATION
 {
-	uint64 monsterId = 1;
-	uint32 animationIndex = 2;
+	AnimationData animationData = 1;
 }
 
 message S_MONSTER_DESPAWN
@@ -70,10 +68,10 @@ message S_MONSTER_DESPAWN
 	repeated uint64 monsterIds = 1;
 }
 
-//message S_MONSTER_HP_CHANGE
-//{
-//	repeated HealthData healths = 1;
-//}
+message S_MONSTER_HP_CHANGE
+{
+	repeated HealthData healths = 1;
+}
 
 message C_CHAT
 {

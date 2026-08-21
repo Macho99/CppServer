@@ -84,6 +84,8 @@
     <ClCompile Include="ZombieMoveState.cpp">
       <Filter>GameContents\Monster</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerDeadState.cpp" />
+    <ClCompile Include="ZombieDeadState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -149,6 +151,8 @@
     <ClInclude Include="ZombieMoveState.h">
       <Filter>GameContents\Monster</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerDeadState.h" />
+    <ClInclude Include="ZombieDeadState.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Common\Protobuf\bin\Struct.proto">

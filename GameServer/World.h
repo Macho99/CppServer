@@ -52,12 +52,17 @@ public:
     const AnimationClipData& GetZombieAnimationClipData(const string& clipName, int& clipIdx) const;
     const AnimationClipData& GetZombieAnimationClipData(int32 clipIndex) const;
     const Vec3 GetSpawnPoint() const { return _spawnPoint; }
-    const Player* GetPlayerById(uint64 playerId) const;
+    Player* GetPlayerById(uint64 playerId) const;
     const Player* FindClosestPlayerInView(
         const Vec3& position,
         float yaw,
         float maxDistance,
         float fieldOfView) const;
+    void DamageZombiesInView(
+        const Player& player,
+        float maxDistance,
+        float angle,
+        int32 damage);
     const NavMeshBuilder& GetNavMesh() const { return _navMeshBuilder; }
 
 private:

@@ -303,12 +303,49 @@ const AnimationClipData& World::GetZombieAnimationClipData(int32 clipIndex) cons
     ASSERT_CRASH(false, "Animation Clip Not Found");
 }
 
-const Player* World::GetPlayerById(uint64 playerId) const
+Player* World::GetPlayerById(uint64 playerId) const
 {
     auto it = _players.find(playerId);
     if (it != _players.end())
         return it->second.get();
     return nullptr;
+}
+
+void World::DamageZombiesInView(
+    const Player& player,
+    float maxDistance,
+    float angle,
+    int32 damage)
+{
+    if (damage <= 0)
+        return;
+
+    Protocol::S_MONSTER_HP_CHANGE hpChangePkt;
+    for (auto& zombiePair : _zombies)
+    {
+        Zombie* zombie = zombiePair.second.get();
+        if (zombie->IsDead())
+            continue;
+
+        const Vec3 zombiePosition = ProtocolUtils::ToVec3(
+            zombie->GetTransformData().pos());
+
+        if (player.IsInRangeAndAngle(zombiePosition, maxDistance, angle))
+        {
+            if (zombie->TakeDamage(damage))
+            {
+                Protocol::HealthData* healthData = hpChangePkt.add_healths();
+                healthData->set_id(zombie->GetId());
+                healthData->set_hp(zombie->GetHealth());
+            }
+        }
+    }
+
+    if (hpChangePkt.healths_size() > 0)
+    {
+        SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(hpChangePkt);
+        Broadcast(sendBuffer);
+    }
 }
 
 const Player* World::FindClosestPlayerInView(

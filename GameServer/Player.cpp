@@ -3,6 +3,7 @@
 #include "PlayerIdleState.h"
 #include "PlayerMoveState.h"
 #include "PlayerAnimationState.h"
+#include "PlayerDeadState.h"
 #include "ProtocolUtils.h"
 
 Player::Player(uint64 playerId, string name, weak_ptr<GameSession> ownerSession)
@@ -16,6 +17,8 @@ Player::Player(uint64 playerId, string name, weak_ptr<GameSession> ownerSession)
     _stateMachine.AddState(PLAYER_STATE::IDLE, std::make_unique<PlayerIdleState>(*this));
     _stateMachine.AddState(PLAYER_STATE::MOVE, std::make_unique<PlayerMoveState>(*this));
     _stateMachine.AddState(PLAYER_STATE::ANIMATION, std::make_unique<PlayerAnimationState>(*this));
+    _stateMachine.AddState(PLAYER_STATE::DEAD, std::make_unique<PlayerDeadState>(*this));
+
     _stateMachine.ChangeState(PLAYER_STATE::IDLE);
 }
 
@@ -61,4 +64,23 @@ bool Player::TryPlayAttackJumpAnimation()
     PlayAnimation(std::move(request));
 
     return true;
+}
+
+void Player::PlayDeadAnimation()
+{
+    AnimationRequest<PLAYER_STATE> request;
+    request.clipName = "sword and shield death";
+    request.returnState = PLAYER_STATE::DEAD;
+    request.playRate = 1.f;
+    request.applyRootMotion = false;
+    request.isDead = true;
+    PlayAnimation(std::move(request));
+}
+
+void Player::Attack(int32 damage)
+{
+    if (damage <= 0)
+        return;
+
+    GWorld->DamageZombiesInView(*this, AttackDistance, AttackAngle, damage);
 }

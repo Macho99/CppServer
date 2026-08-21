@@ -6,12 +6,15 @@
 #include "ProtocolUtils.h"
 #include "World.h"
 
+#include <cmath>
+
 template<typename TStateType>
 struct AnimationRequest
 {
     string clipName;
     TStateType returnState = static_cast<TStateType>(0);
     float playRate = 1.f;
+    bool isDead = false;
     bool applyRootMotion = true;
 };
 
@@ -28,6 +31,48 @@ public:
     virtual ~Character() = default;
 
     uint64 GetId() const { return _id; }
+    int32 GetHealth() const { return _health; }
+    bool IsDead() const { return _health <= 0; }
+    virtual void PlayDeadAnimation() = 0;
+
+    bool TakeDamage(int32 damage)
+    {
+        if (damage <= 0 || IsDead())
+            return false;
+
+        _health = max(_health - damage, 0);
+        if (_health <= 0)
+            PlayDeadAnimation();
+        else
+            OnTakeDamage(damage);
+
+        return true;
+    }
+
+    bool IsInRangeAndAngle(
+        const Vec3& targetPosition,
+        float maxDistance,
+        float angle) const
+    {
+        const Vec3 position = ProtocolUtils::ToVec3(_transformData.pos());
+        Vec3 directionToTarget = targetPosition - position;
+        directionToTarget.y = 0.f;
+
+        const float distanceSquared = directionToTarget.LengthSquared();
+        if (distanceSquared > maxDistance * maxDistance)
+            return false;
+
+        if (distanceSquared <= kEps)
+            return true;
+
+        directionToTarget /= sqrtf(distanceSquared);
+        const Vec3 forwardDirection = MathUtils::RotateByYaw(
+            Vec3::Forward,
+            _transformData.yaw());
+        const float halfAngle = std::clamp(angle, 0.f, 360.f) * 0.5f;
+        const float minDot = cosf(halfAngle * PI / 180.f);
+        return directionToTarget.Dot(forwardDirection) >= minDot;
+    }
 
     virtual void Update(float deltaTime)
     {
@@ -98,6 +143,10 @@ public:
     TStateType GetState() const { return _stateMachine.GetCurrentState(); }
 
 protected:
+    virtual void OnTakeDamage(int32 damage) {}
+
+
+protected:
     StateMachine<TStateType> _stateMachine;
     Protocol::TransformData _transformData;
     bool _stateChanged = false;
@@ -116,6 +165,7 @@ private:
     }
 
     uint64 _id;
+    int32 _health = 100;
     ValidatePositionInfo _validatePositionInfo;
     AnimationRequest<TStateType> _animationRequest;
 };

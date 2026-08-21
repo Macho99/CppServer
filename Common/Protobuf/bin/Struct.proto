@@ -25,6 +25,13 @@ message TransformData
 	Vec2 blendInput = 5;
 }
 
+message AnimationData
+{
+	uint64 id = 1;
+	uint32 animationIndex = 2;
+	bool isDead = 3;
+}
+
 message HealthData
 {
 	uint64 id = 1;

@@ -194,6 +194,7 @@
     </ClCompile>
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerAnimationState.cpp" />
+    <ClCompile Include="PlayerDeadState.cpp" />
     <ClCompile Include="PlayerIdleState.cpp" />
     <ClCompile Include="PlayerMoveState.cpp" />
     <ClCompile Include="Protocol.pb.cc">
@@ -213,6 +214,7 @@
     </ClCompile>
     <ClCompile Include="Zombie.cpp" />
     <ClCompile Include="ZombieAnimationState.cpp" />
+    <ClCompile Include="ZombieDeadState.cpp" />
     <ClCompile Include="ZombieIdleState.cpp" />
     <ClCompile Include="ZombieMoveState.cpp" />
   </ItemGroup>
@@ -226,6 +228,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerAnimationState.h" />
+    <ClInclude Include="PlayerDeadState.h" />
     <ClInclude Include="PlayerIdleState.h" />
     <ClInclude Include="PlayerMoveState.h" />
     <ClInclude Include="Protocol.pb.h" />
@@ -236,6 +239,7 @@
     <ClInclude Include="StateMachine.h" />
     <ClInclude Include="Zombie.h" />
     <ClInclude Include="ZombieAnimationState.h" />
+    <ClInclude Include="ZombieDeadState.h" />
     <ClInclude Include="ZombieIdleState.h" />
     <ClInclude Include="ZombieMoveState.h" />
   </ItemGroup>

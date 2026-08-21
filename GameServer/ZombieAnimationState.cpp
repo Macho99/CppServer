@@ -12,8 +12,16 @@ const AnimationClipData& ZombieAnimationState::GetAnimationClipData(const string
 void ZombieAnimationState::OnAnimationStarted(int clipIndex)
 {
     Protocol::S_MONSTER_ANIMATION pkt;
-    pkt.set_animationindex(clipIndex);
-    pkt.set_monsterid(GetOwner().GetId());
+    Protocol::AnimationData* animData = pkt.mutable_animationdata();
+    animData->set_id(GetOwner().GetId());
+    animData->set_animationindex(clipIndex);
+
     SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(pkt);
     GWorld->Broadcast(sendBuffer);
+}
+
+void ZombieAnimationState::OnAnimationEvent(const ClipEventData& eventData)
+{
+    if (eventData.eventName == "AttackDamage")
+        static_cast<Zombie&>(GetOwner()).Attack(eventData.intParam);
 }

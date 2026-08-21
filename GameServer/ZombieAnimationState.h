@@ -11,5 +11,6 @@ public:
 private:
     const AnimationClipData& GetAnimationClipData(const string& animationName, int& clipIndex) const override;
     void OnAnimationStarted(int clipIndex) override;
+    void OnAnimationEvent(const ClipEventData& eventData) override;
 };
 

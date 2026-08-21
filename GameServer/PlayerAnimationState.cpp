@@ -13,9 +13,16 @@ const AnimationClipData& PlayerAnimationState::GetAnimationClipData(
 void PlayerAnimationState::OnAnimationStarted(int clipIndex)
 {
     Protocol::S_PLAYER_ANIMATION pkt;
-    pkt.set_playerid(GetOwner().GetId());
-    pkt.set_animationindex(clipIndex);
+    Protocol::AnimationData* animData = pkt.mutable_animationdata();
+    animData->set_id(GetOwner().GetId());
+    animData->set_animationindex(clipIndex);
 
     SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(pkt);
     GWorld->Broadcast(sendBuffer);
+}
+
+void PlayerAnimationState::OnAnimationEvent(const ClipEventData& eventData)
+{
+    if (eventData.eventName == "AttackDamage")
+        static_cast<Player&>(GetOwner()).Attack(eventData.intParam);
 }

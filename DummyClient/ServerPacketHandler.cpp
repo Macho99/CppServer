@@ -39,6 +39,11 @@ bool Handle_S_PLAYER_MOVE(PacketSessionRef& session, Protocol::S_PLAYER_MOVE& pk
 	return false;
 }
 
+bool Handle_S_PLAYER_HP_CHANGE(PacketSessionRef& session, Protocol::S_PLAYER_HP_CHANGE& pkt)
+{
+	return false;
+}
+
 bool Handle_S_MONSTER_SPAWN(PacketSessionRef& session, Protocol::S_MONSTER_SPAWN& pkt)
 {
 	return false;
@@ -55,6 +60,11 @@ bool Handle_S_MONSTER_ANIMATION(PacketSessionRef& session, Protocol::S_MONSTER_A
 }
 
 bool Handle_S_MONSTER_DESPAWN(PacketSessionRef& session, Protocol::S_MONSTER_DESPAWN& pkt)
+{
+	return false;
+}
+
+bool Handle_S_MONSTER_HP_CHANGE(PacketSessionRef& session, Protocol::S_MONSTER_HP_CHANGE& pkt)
 {
 	return false;
 }

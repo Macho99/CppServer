@@ -47,6 +47,8 @@ public:
         if (_applyRootMotion)
             ApplyRootMotion();
 
+        ProcessPassedEvents();
+
         if (_elapsedTime >= _clipDuration - 0.1f)
             _owner.ChangeState(_returnState);
     }
@@ -88,8 +90,30 @@ protected:
     virtual const AnimationClipData& GetAnimationClipData(
         const string& animationName, int& clipIndex) const = 0;
     virtual void OnAnimationStarted(int clipIndex) = 0;
+    virtual void OnAnimationEvent(const ClipEventData& eventData) {}
 
 private:
+    void ProcessPassedEvents()
+    {
+        if (_currentClipData == nullptr)
+            return;
+
+        const uint32 previousFrame =
+            static_cast<uint32>(_previousElapsedTime * AnimationFrameRate);
+        const uint32 currentFrame =
+            static_cast<uint32>(_elapsedTime * AnimationFrameRate);
+
+        for (const ClipEventData& eventData : _currentClipData->events)
+        {
+            const bool isStartEvent =
+                _previousElapsedTime <= 0.f && eventData.frame == 0;
+            const bool passedThisUpdate =
+                eventData.frame > previousFrame && eventData.frame <= currentFrame;
+            if (isStartEvent || passedThisUpdate)
+                OnAnimationEvent(eventData);
+        }
+    }
+
     void SetAnimation(const string& animationName)
     {
         int clipIndex = -1;

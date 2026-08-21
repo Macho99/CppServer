@@ -13,13 +13,15 @@ enum : uint16
 	PKT_C_PLAYER_INPUT = 1004,
 	PKT_S_PLAYER_ANIMATION = 1005,
 	PKT_S_PLAYER_MOVE = 1006,
-	PKT_S_MONSTER_SPAWN = 1007,
-	PKT_S_MONSTER_MOVE = 1008,
-	PKT_S_MONSTER_ANIMATION = 1009,
-	PKT_S_MONSTER_DESPAWN = 1010,
-	PKT_C_CHAT = 1011,
-	PKT_S_CHAT = 1012,
-	PKT_C_SPAWN_MONSTER = 1013,
+	PKT_S_PLAYER_HP_CHANGE = 1007,
+	PKT_S_MONSTER_SPAWN = 1008,
+	PKT_S_MONSTER_MOVE = 1009,
+	PKT_S_MONSTER_ANIMATION = 1010,
+	PKT_S_MONSTER_DESPAWN = 1011,
+	PKT_S_MONSTER_HP_CHANGE = 1012,
+	PKT_C_CHAT = 1013,
+	PKT_S_CHAT = 1014,
+	PKT_C_SPAWN_MONSTER = 1015,
 };
 
 // Custom Handlers
@@ -52,10 +54,12 @@ public:
 	static SendBufferRef MakeSendBuffer(Protocol::S_PLAYER_EXIT& pkt) { return MakeSendBuffer(pkt, PKT_S_PLAYER_EXIT); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_PLAYER_ANIMATION& pkt) { return MakeSendBuffer(pkt, PKT_S_PLAYER_ANIMATION); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_PLAYER_MOVE& pkt) { return MakeSendBuffer(pkt, PKT_S_PLAYER_MOVE); }
+	static SendBufferRef MakeSendBuffer(Protocol::S_PLAYER_HP_CHANGE& pkt) { return MakeSendBuffer(pkt, PKT_S_PLAYER_HP_CHANGE); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_MONSTER_SPAWN& pkt) { return MakeSendBuffer(pkt, PKT_S_MONSTER_SPAWN); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_MONSTER_MOVE& pkt) { return MakeSendBuffer(pkt, PKT_S_MONSTER_MOVE); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_MONSTER_ANIMATION& pkt) { return MakeSendBuffer(pkt, PKT_S_MONSTER_ANIMATION); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_MONSTER_DESPAWN& pkt) { return MakeSendBuffer(pkt, PKT_S_MONSTER_DESPAWN); }
+	static SendBufferRef MakeSendBuffer(Protocol::S_MONSTER_HP_CHANGE& pkt) { return MakeSendBuffer(pkt, PKT_S_MONSTER_HP_CHANGE); }
 	static SendBufferRef MakeSendBuffer(Protocol::S_CHAT& pkt) { return MakeSendBuffer(pkt, PKT_S_CHAT); }
 
 private:
