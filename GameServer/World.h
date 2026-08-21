@@ -16,6 +16,7 @@ struct AnimationClipData
     string clipName = "";
     vector<Vec3> positions;
     vector<ClipEventData> events;
+    string nextComboClipName = "";
 };
 
 struct AnimationData

@@ -77,6 +77,16 @@ int main()
 
     this_thread::sleep_for(1s);
     {
+        Protocol::C_LOGIN loginPkt;
+        loginPkt.set_name("DummyClient");
+        SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(loginPkt);
+        serverSession->Send(sendBuffer);
+    }
+
+
+    this_thread::sleep_for(1s);
+
+    {
         Protocol::C_SPAWN_MONSTER spawnPkt;
         spawnPkt.set_spawnlevel(1);
         SendBufferRef sendBuffer = ServerPacketHandler::MakeSendBuffer(spawnPkt);

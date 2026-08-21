@@ -8,6 +8,7 @@
 #include "ProtocolUtils.h"
 #include "Protocol.pb.h"
 #include "ClientPacketHandler.h"
+#include "ZombieDeadState.h"
 
 Zombie::Zombie(uint64 id)
     : Super(id), _individualMaxVelocity(MathUtils::Random(_maxVelocity * 0.5f, _maxVelocity))
@@ -15,6 +16,7 @@ Zombie::Zombie(uint64 id)
     _stateMachine.AddState(ZOMBIE_STATE::IDLE, std::make_unique<ZombieIdleState>(*this));
     _stateMachine.AddState(ZOMBIE_STATE::MOVE, std::make_unique<ZombieMoveState>(*this));
     _stateMachine.AddState(ZOMBIE_STATE::ANIMATION, std::make_unique<ZombieAnimationState>(*this));
+    _stateMachine.AddState(ZOMBIE_STATE::DEAD, std::make_unique<ZombieDeadState>(*this));
 
     _stateMachine.ChangeState(ZOMBIE_STATE::IDLE);
 }

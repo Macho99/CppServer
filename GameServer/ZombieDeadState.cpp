@@ -11,7 +11,11 @@ void ZombieDeadState::Update(float deltaTime)
     _leftDespawnTime -= deltaTime;
     if (_leftDespawnTime <= 0.f)
     {
-        GWorld->DespawnMonster(_owner.GetId());
+        uint64 zombieId = _owner.GetId();
+        GWorld->DoAsync([zombieId]()
+            {
+                GWorld->DespawnMonster(zombieId);
+            });
     }
 }
 

@@ -161,11 +161,13 @@ private:
         return MathUtils::Lerp(positions[currentFrame], positions[nextFrame], ratio);
     }
 
+protected:
+    const AnimationClipData* _currentClipData = nullptr;
+
 private:
     static constexpr float AnimationFrameRate = 30.f;
 
     Character<TStateType>& _owner;
-    const AnimationClipData* _currentClipData = nullptr;
     float _previousElapsedTime = 0.f;
     float _elapsedTime = 0.f;
     float _clipDuration = 0.f;
