@@ -24,13 +24,13 @@ public:
         _states[stateType] = std::move(state);
     }
 
-    bool ChangeState(StateType stateType)
+    bool ChangeState(StateType stateType, bool forceUpdate = false)
     {
         auto next = _states.find(stateType);
         if (next == _states.end())
             return false;
 
-        if (_hasCurrentState && _currentState == stateType)
+        if (_hasCurrentState && _currentState == stateType && !forceUpdate)
             return true;
 
         if (_hasCurrentState)

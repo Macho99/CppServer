@@ -16,6 +16,7 @@ struct AnimationRequest
     float playRate = 1.f;
     bool isDead = false;
     bool applyRootMotion = true;
+    bool forceUpdate = false;
 };
 
 template<typename TStateType>
@@ -122,18 +123,18 @@ public:
             request.returnState = TStateType::IDLE;
 
         _animationRequest = std::move(request);
-        ChangeState(TStateType::ANIMATION);
+        ChangeState(TStateType::ANIMATION, _animationRequest.forceUpdate);
     }
 
-    void ChangeState(TStateType state)
+    void ChangeState(TStateType state, bool forceUpdate = false)
     {
         const bool hadCurrentState = _stateMachine.HasCurrentState();
         const TStateType previousState = _stateMachine.GetCurrentState();
 
-        if (!_stateMachine.ChangeState(state))
+        if (!_stateMachine.ChangeState(state, forceUpdate))
             return;
 
-        if (!hadCurrentState || _stateMachine.GetCurrentState() != previousState)
+        if (!hadCurrentState || _stateMachine.GetCurrentState() != previousState || forceUpdate)
             _stateChanged = true;
 
         cout << "Character::ChangeState : Character ID " << _id << " changed state from "

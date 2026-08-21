@@ -74,6 +74,7 @@ void Player::PlayDeadAnimation()
     request.playRate = 1.f;
     request.applyRootMotion = false;
     request.isDead = true;
+    request.forceUpdate = true;
     PlayAnimation(std::move(request));
 }
 

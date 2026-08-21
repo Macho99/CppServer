@@ -82,6 +82,7 @@ void Zombie::PlayDeadAnimation()
     request.clipName = random > 0.5f ? "zombie death" : "zombie dying";
     request.returnState = ZOMBIE_STATE::DEAD;
     request.isDead = true;
+    request.forceUpdate = true;
     PlayAnimation(request);
 }
 
@@ -106,6 +107,7 @@ void Zombie::OnTakeDamage(int32 damage)
     AnimationRequest<ZOMBIE_STATE> request;
     request.clipName = "Sword And Shield Impact";
     request.returnState = ZOMBIE_STATE::MOVE;
+    request.forceUpdate = true;
 
     PlayAnimation(request);
 }
