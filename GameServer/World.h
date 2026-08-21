@@ -61,6 +61,7 @@ public:
         float yaw,
         float maxDistance,
         float fieldOfView) const;
+    void ShareZombieTarget(Zombie& source, float radius);
     void DamageZombiesInView(
         const Player& player,
         float maxDistance,

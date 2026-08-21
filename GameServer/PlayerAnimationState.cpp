@@ -7,15 +7,21 @@
 void PlayerAnimationState::Enter()
 {
     Super::Enter();
-    _attackEndCalled = false;
+    _attackButtonClicked = false;
 }
 
 void PlayerAnimationState::Update(float deltaTime)
 {
     Super::Update(deltaTime);
-    if (_attackEndCalled && _currentClipData->nextComboClipName != "")
+
+    if (_owner.GetInputKey(KEY_TYPE::LBUTTON))
     {
-        if (_owner.GetInputKey(KEY_TYPE::LBUTTON))
+        _attackButtonClicked = true;
+    }
+
+    if (_attackButtonClicked && _currentClipData->nextComboClipName != "")
+    {
+        if (std::abs(_clipDuration - _elapsedTime) < 0.4f)
         {
             AnimationRequest<PLAYER_STATE> request;
             request.clipName = _currentClipData->nextComboClipName;
@@ -48,6 +54,5 @@ void PlayerAnimationState::OnAnimationEvent(const ClipEventData& eventData)
     if (eventData.eventName == "AttackDamage")
     {
         static_cast<Player&>(GetOwner()).Attack(eventData.intParam, eventData.floatParam);
-        _attackEndCalled = true;
-    }        
+    }
 }

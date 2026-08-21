@@ -24,7 +24,7 @@ public:
     const float GetIndividualMaxVelocity() const { return _individualMaxVelocity; }
 
     Player* GetTargetPlayer();
-    bool TryAcquireTarget();
+    bool TryAcquireTargetAndScream();
     bool HasTarget() const { return _targetPlayerId != 0; }
     void SetTargetPlayer(uint64 playerId) { _targetPlayerId = playerId; }
     void ClearTargetPlayer() { _targetPlayerId = 0; }

@@ -400,3 +400,32 @@ const Player* World::FindClosestPlayerInView(
 
     return closestPlayer;
 }
+
+void World::ShareZombieTarget(Zombie& source, float radius)
+{
+    if (radius <= 0.f || source.IsDead())
+        return;
+
+    Player* targetPlayer = source.GetTargetPlayer();
+    if (targetPlayer == nullptr || targetPlayer->IsDead())
+        return;
+
+    const Vec3 sourcePosition = ProtocolUtils::ToVec3(source.GetTransformData().pos());
+    const Vec3 targetPosition = ProtocolUtils::ToVec3(targetPlayer->GetTransformData().pos());
+    const float radiusSquared = radius * radius;
+
+    for (auto& zombiePair : _zombies)
+    {
+        Zombie* zombie = zombiePair.second.get();
+        if (zombie == &source || zombie->IsDead())
+            continue;
+
+        const Vec3 zombiePosition = ProtocolUtils::ToVec3(zombie->GetTransformData().pos());
+        if (Vec3::DistanceSquared(sourcePosition, zombiePosition) > radiusSquared)
+            continue;
+
+        zombie->SetTargetPlayer(targetPlayer->GetId());
+        zombie->SetTargetPosition(targetPosition);
+        zombie->ChangeState(ZOMBIE_STATE::MOVE, true);
+    }
+}

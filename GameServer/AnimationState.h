@@ -164,7 +164,7 @@ private:
 protected:
     const AnimationClipData* _currentClipData = nullptr;
 
-private:
+protected:
     static constexpr float AnimationFrameRate = 30.f;
 
     Character<TStateType>& _owner;

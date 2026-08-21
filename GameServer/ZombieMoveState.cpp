@@ -19,10 +19,9 @@ void ZombieMoveState::Enter()
 
 void ZombieMoveState::Update(float deltaTime)
 {
-    if (_owner.TryAcquireTarget())
+    if (_owner.TryAcquireTargetAndScream())
     {
-        _moveInfo.Init();
-        _elapsedFindPathTime = MaxFindPathInterval;
+        return;
     }
 
     const Player* targetPlayer = _owner.GetTargetPlayer();

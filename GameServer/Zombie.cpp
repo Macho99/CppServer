@@ -114,7 +114,7 @@ void Zombie::OnTakeDamage(int32 damage)
     PlayAnimation(request);
 }
 
-bool Zombie::TryAcquireTarget()
+bool Zombie::TryAcquireTargetAndScream()
 {
     if (HasTarget() == true || _leftTargetScanTime > 0.f)
         return false;
@@ -132,5 +132,11 @@ bool Zombie::TryAcquireTarget()
 
     SetTargetPlayer(player->GetId());
     SetTargetPosition(ProtocolUtils::ToVec3(player->GetTransformData().pos()));
+
+    AnimationRequest<ZOMBIE_STATE> request;
+    request.clipName = "zombie scream";
+    request.returnState = ZOMBIE_STATE::MOVE;
+    PlayAnimation(request);
+
     return true;
 }

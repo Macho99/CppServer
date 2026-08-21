@@ -20,6 +20,6 @@ private:
 
 private:
     Player& _owner;
-    bool _attackEndCalled = false;
+    bool _attackButtonClicked = false;
 };
 

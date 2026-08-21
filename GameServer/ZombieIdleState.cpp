@@ -11,9 +11,8 @@ void ZombieIdleState::Enter()
 
 void ZombieIdleState::Update(float deltaTime)
 {
-    if (_owner.TryAcquireTarget())
+    if (_owner.TryAcquireTargetAndScream())
     {
-        _owner.ChangeState(ZOMBIE_STATE::MOVE);
         return;
     }
 
