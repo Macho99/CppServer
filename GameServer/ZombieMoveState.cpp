@@ -26,6 +26,13 @@ void ZombieMoveState::Update(float deltaTime)
     }
 
     const Player* targetPlayer = _owner.GetTargetPlayer();
+    if (targetPlayer != nullptr && targetPlayer->IsDead())
+    {
+        _owner.ClearTargetPlayer();
+        _owner.ChangeState(ZOMBIE_STATE::IDLE);
+        return;
+    }
+
     if (targetPlayer == nullptr)
     {
         if (_moveInfo.state == MoveInfo::State::Arrived)

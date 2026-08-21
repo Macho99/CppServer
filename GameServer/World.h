@@ -42,6 +42,7 @@ public:
     void PlayerInput(PlayerRef player, Protocol::C_PLAYER_INPUT pkt);
     bool ValidatePosition(ValidatePositionInfo& info) const;
     void SpawnMonster(const Protocol::C_SPAWN_MONSTER pkt);
+    void DespawnMonster(uint64 monsterId);
 
 public:
     void LoadNavMesh(const fs::path& navPath);

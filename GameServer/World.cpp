@@ -167,6 +167,17 @@ void World::SpawnMonster(const Protocol::C_SPAWN_MONSTER pkt)
     }
 }
 
+void World::DespawnMonster(uint64 monsterId)
+{
+    auto it = _zombies.find(monsterId);
+    if (it == _zombies.end())
+        return;
+    _zombies.erase(it);
+    Protocol::S_MONSTER_DESPAWN despawnPkt;
+    despawnPkt.add_monsterids(monsterId);
+    Broadcast(ClientPacketHandler::MakeSendBuffer(despawnPkt));
+}
+
 void World::LoadNavMesh(const fs::path& navPath)
 {
     _navMeshBuilder.LoadFromFile(navPath);
@@ -364,6 +375,9 @@ const Player* World::FindClosestPlayerInView(
     for (const auto& playerPair : _players)
     {
         const Player* player = playerPair.second.get();
+        if (player->IsDead())
+            continue;
+
         const Vec3 playerPosition = ProtocolUtils::ToVec3(player->GetTransformData().pos());
         const float distanceSquared = Vec3::DistanceSquared(position, playerPosition);
         if (distanceSquared > closestDistanceSquared)

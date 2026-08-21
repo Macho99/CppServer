@@ -48,7 +48,12 @@ bool Player::TryPlayAttackJumpAnimation()
     string clipName;
 
     if (GetInputKey(KEY_TYPE::LBUTTON))
-        clipName = "sword and shield slash";
+    {
+        if (_transformData.blendinput().y() > 1.5f)
+            clipName = "sword and shield attack (2)";
+        else
+            clipName = "sword and shield slash";
+    }
     else if (GetInputKey(KEY_TYPE::R))
         clipName = "sword and shield slash (2)";
     else if (GetInputKey(KEY_TYPE::SPACE))

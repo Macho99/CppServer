@@ -11,5 +11,7 @@ public:
 
 private:
     Zombie& _owner;
+
+    float _leftDespawnTime = 0.f;
 };
 
