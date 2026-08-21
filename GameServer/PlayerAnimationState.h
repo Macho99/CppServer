@@ -21,5 +21,6 @@ private:
 private:
     Player& _owner;
     bool _attackButtonClicked = false;
+    bool _attacked = false;
 };
 

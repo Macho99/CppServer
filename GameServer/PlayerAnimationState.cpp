@@ -8,13 +8,14 @@ void PlayerAnimationState::Enter()
 {
     Super::Enter();
     _attackButtonClicked = false;
+    _attacked = false;
 }
 
 void PlayerAnimationState::Update(float deltaTime)
 {
     Super::Update(deltaTime);
 
-    if (_owner.GetInputKey(KEY_TYPE::LBUTTON))
+    if (_attacked && _owner.GetInputKey(KEY_TYPE::LBUTTON))
     {
         _attackButtonClicked = true;
     }
@@ -54,5 +55,6 @@ void PlayerAnimationState::OnAnimationEvent(const ClipEventData& eventData)
     if (eventData.eventName == "AttackDamage")
     {
         static_cast<Player&>(GetOwner()).Attack(eventData.intParam, eventData.floatParam);
+        _attacked = true;
     }
 }

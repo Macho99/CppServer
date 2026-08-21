@@ -85,10 +85,9 @@ void ZombieMoveState::Update(float deltaTime)
     const NavMeshBuilder& navMesh = GWorld->GetNavMesh();
     if (navMesh.MoveAlongPath(_moveConfig, _moveInfo, deltaTime) == false)
     {
-        if (_moveInfo.state == MoveInfo::State::Arrived)
-            _owner.ChangeState(ZOMBIE_STATE::IDLE);
-        else
-            cout << "ZombieMoveState::Update : Failed to move along path." << endl;
+        _owner.ClearTargetPlayer();
+        _owner.ChangeState(ZOMBIE_STATE::IDLE);
+        cout << "ZombieMoveState::Update : Failed to move along path for Zombie ID " << _owner.GetId() << endl;
         return;
     }
     
