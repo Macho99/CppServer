@@ -216,6 +216,7 @@ void World::LoadAnimationData(const fs::path& animDataPath)
 			fileUtils.Read(clipEventData.frame);
 		}
         fileUtils.Read(clipData.nextComboClipName);
+        fileUtils.Read(clipData.animationSpeed);
         animationData.clips.push_back(std::move(clipData));
 	}
 

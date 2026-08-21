@@ -17,6 +17,7 @@ struct AnimationClipData
     vector<Vec3> positions;
     vector<ClipEventData> events;
     string nextComboClipName = "";
+    float animationSpeed = 1.f;
 };
 
 struct AnimationData

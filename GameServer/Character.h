@@ -13,7 +13,6 @@ struct AnimationRequest
 {
     string clipName;
     TStateType returnState = static_cast<TStateType>(0);
-    float playRate = 1.f;
     bool isDead = false;
     bool applyRootMotion = true;
     bool forceUpdate = false;
@@ -118,7 +117,6 @@ public:
         if (request.clipName.empty())
             return;
 
-        request.playRate = max(request.playRate, 0.f);
         if (request.returnState == TStateType::ANIMATION)
             request.returnState = TStateType::IDLE;
 

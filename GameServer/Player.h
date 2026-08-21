@@ -73,7 +73,7 @@ public:
     bool GetInputKey(KEY_TYPE keyType) const;
 	bool IsMovingInput() const;
     bool TryPlayAttackJumpAnimation();
-    void Attack(int32 damage);
+    void Attack(int32 damage, float angle = 0.f) const;
 
     float GetAttackDistance() const { return AttackDistance; }
     float GetAttackAngle() const { return AttackAngle; }

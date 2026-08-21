@@ -27,7 +27,6 @@ public:
             return;
         }
 
-        _playRate = request.playRate;
         _applyRootMotion = request.applyRootMotion;
         _returnState = request.returnState;
         SetAnimation(request.clipName);
@@ -122,6 +121,7 @@ private:
         _elapsedTime = 0.f;
         _clipDuration =
             static_cast<float>(_currentClipData->positions.size()) / AnimationFrameRate;
+        _playRate = max(_currentClipData->animationSpeed, 0.01f);
 
         OnAnimationStarted(clipIndex);
     }

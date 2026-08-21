@@ -47,7 +47,7 @@ void PlayerAnimationState::OnAnimationEvent(const ClipEventData& eventData)
 {
     if (eventData.eventName == "AttackDamage")
     {
-        static_cast<Player&>(GetOwner()).Attack(eventData.intParam);
+        static_cast<Player&>(GetOwner()).Attack(eventData.intParam, eventData.floatParam);
         _attackEndCalled = true;
     }        
 }

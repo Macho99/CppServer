@@ -64,7 +64,6 @@ bool Player::TryPlayAttackJumpAnimation()
     AnimationRequest<PLAYER_STATE> request;
     request.clipName = std::move(clipName);
     request.returnState = PLAYER_STATE::IDLE;
-    request.playRate = 1.f;
     request.applyRootMotion = true;
     PlayAnimation(std::move(request));
 
@@ -76,17 +75,21 @@ void Player::PlayDeadAnimation()
     AnimationRequest<PLAYER_STATE> request;
     request.clipName = "sword and shield death";
     request.returnState = PLAYER_STATE::DEAD;
-    request.playRate = 1.f;
     request.applyRootMotion = false;
     request.isDead = true;
     request.forceUpdate = true;
     PlayAnimation(std::move(request));
 }
 
-void Player::Attack(int32 damage)
+void Player::Attack(int32 damage, float angle) const
 {
     if (damage <= 0)
         return;
 
-    GWorld->DamageZombiesInView(*this, AttackDistance, AttackAngle, damage);
+    if (angle <= 0.1f)
+    {
+        angle = AttackAngle;
+    }
+
+    GWorld->DamageZombiesInView(*this, AttackDistance, angle, damage);
 }
