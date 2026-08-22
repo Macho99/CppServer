@@ -108,6 +108,27 @@ void World::PlayerInput(PlayerRef player, Protocol::C_PLAYER_INPUT pkt)
     }
 }
 
+void World::PlayerShopBuy(PlayerRef player, Protocol::C_PLAYER_SHOP_BUY pkt)
+{
+    switch (pkt.itemid())
+    {
+    case 0: // HP Potion
+        if(player->TrySubtractCoin(30))
+            player->AddHealth(30);
+        break;
+    case 1: // MP Potion
+        if (player->TrySubtractCoin(10))
+            player->AddMp(30);
+        break;
+    case 2:
+        if (player->TrySubtractCoin(100))
+        {
+            player->SetMaxHealth(player->GetMaxHealth() + 10);
+            player->SetMaxMp(player->GetMaxMp() + 10);
+        }
+    }
+}
+
 bool World::ValidatePosition(ValidatePositionInfo& info) const
 {
     if (_navMeshBuilder.IsBuilt() == false)
@@ -115,7 +136,7 @@ bool World::ValidatePosition(ValidatePositionInfo& info) const
     return _navMeshBuilder.ValidatePosition(info);
 }
 
-void World::SpawnMonster(const Protocol::C_SPAWN_MONSTER pkt)
+void World::SpawnMonster(int count)
 {
     static uint64 monsterIdGenerator = 1;
 
@@ -126,7 +147,7 @@ void World::SpawnMonster(const Protocol::C_SPAWN_MONSTER pkt)
 
     vector<Zombie*> spawnedZombies;
     Protocol::S_MONSTER_SPAWN spawnPkt;
-    for (int i = 0; i < pkt.spawnlevel(); i++)
+    for (int i = 0; i < count; i++)
     {
         bool canSpawn = false;
         Vec3 validPos;
@@ -228,10 +249,11 @@ void World::LoadAnimationData(const fs::path& animDataPath)
 
 void World::Update()
 {
-    const uint64 curTick = ::GetTickCount64();
+    const int64 curTick = ::GetTickCount64();
     const float delta = _lastUpdateTick == 0
         ? 0.f
         : static_cast<float>(curTick - _lastUpdateTick) * 0.001f;
+    cout << "World::Update delta : " << delta << endl;
 
 	for (auto& playerPair : _players)
 	{
@@ -261,13 +283,28 @@ void World::Update()
         Protocol::S_MONSTER_MOVE monsterMovePkt;
         for (const auto& zombiePair : _zombies)
         {
-            Protocol::TransformData* transformData = monsterMovePkt.add_transforms();
-            transformData->CopyFrom(zombiePair.second->GetTransformData());
+            if (zombiePair.second->IsTransformDirty())
+            {
+                Protocol::TransformData* transformData = monsterMovePkt.add_transforms();
+                transformData->CopyFrom(zombiePair.second->GetTransformData());
+            }
         }
-        Broadcast(ClientPacketHandler::MakeSendBuffer(monsterMovePkt));
+
+        if (monsterMovePkt.transforms_size() > 0)
+            Broadcast(ClientPacketHandler::MakeSendBuffer(monsterMovePkt));
     }
 
-    GWorld->DoTimer(50, &World::Update);
+    const int zombieTotalCount = 30;
+    if (_zombies.size() < zombieTotalCount)
+    {
+        SpawnMonster(zombieTotalCount - _zombies.size());
+    }
+    
+    const int64 afterUpdateTick = ::GetTickCount64();
+    cout << "World::Update took " << (afterUpdateTick - curTick) << " ms" << endl;
+    const uint64 nextUpdateTick = std::max(40 - (afterUpdateTick - curTick), 0LL);
+
+    GWorld->DoTimer(nextUpdateTick, &World::Update);
     _lastUpdateTick = curTick;
 }
 
@@ -323,8 +360,7 @@ Player* World::GetPlayerById(uint64 playerId) const
     return nullptr;
 }
 
-void World::DamageZombiesInView(
-    const Player& player,
+void World::DamageZombiesInView(Player& player,
     float maxDistance,
     float angle,
     int32 damage)
@@ -349,6 +385,12 @@ void World::DamageZombiesInView(
                 Protocol::HealthData* healthData = hpChangePkt.add_healths();
                 healthData->set_id(zombie->GetId());
                 healthData->set_hp(zombie->GetHealth());
+                healthData->set_maxhp(zombie->GetMaxHealth());
+
+                if (zombie->IsDead())
+                {
+                    player.SetCoin(player.GetCoin() + 10);
+                }
             }
         }
     }

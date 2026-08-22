@@ -69,6 +69,11 @@ bool Handle_S_MONSTER_HP_CHANGE(PacketSessionRef& session, Protocol::S_MONSTER_H
 	return false;
 }
 
+bool Handle_S_STAT_CHANGE(PacketSessionRef& session, Protocol::S_STAT_CHANGE& pkt)
+{
+	return false;
+}
+
 bool Handle_S_CHAT(PacketSessionRef& session, Protocol::S_CHAT& pkt)
 {
 	cout << "Handle_S_CHAT" << endl;

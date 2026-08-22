@@ -73,7 +73,7 @@ public:
     bool GetInputKey(KEY_TYPE keyType) const;
 	bool IsMovingInput() const;
     bool TryPlayAttackJumpAnimation();
-    void Attack(int32 damage, float angle = 0.f) const;
+    void Attack(int32 damage, float angle = 0.f);
 
     float GetAttackDistance() const { return AttackDistance; }
     float GetAttackAngle() const { return AttackAngle; }
@@ -83,8 +83,25 @@ public:
     void SetCameraYaw(float yaw) { _cameraYaw = yaw; }
     float GetCameraYaw() const { return _cameraYaw; }
 
-    virtual void PlayDeadAnimation() override;
+    int32 GetMaxMp() const { return _statData.maxmp(); }
+    void SetMaxMp(int32 maxMp) { _statData.set_maxmp(maxMp); _isStatDataDirty = true; }
+    void SetMaxSp(int32 maxSp) { _statData.set_maxsp(maxSp); _isStatDataDirty = true; }
+    void SetCoin(int32 coin) { _statData.set_coin(coin); _isStatDataDirty = true; }
+    int32 GetCoin() const { return _statData.coin(); }
 
+    float GetCurMp() const { return _curMp; }
+    float GetCurSp() const { return _curSp; }
+    void SetCurMp(float curMp) { _curMp = curMp; }
+    void SetCurSp(float curSp) { _curSp = curSp; }
+    void AddMp(float amount) { _curMp += amount; if (_curMp > _statData.maxmp()) _curMp = _statData.maxmp(); }
+
+    bool TrySubtractMp(float mpCost);
+    bool TrySubtractSp(float spCost);
+	bool TrySubtractCoin(int32 coinCost);
+
+    virtual void Update(float deltaTime) override;
+    virtual void PlayDeadAnimation() override;
+	
 private:
 	string _name;
 	weak_ptr<GameSession> _ownerSession;
@@ -94,5 +111,10 @@ private:
 
     static constexpr float AttackDistance = 2.f;
     static constexpr float AttackAngle = 120.f;
+
+    bool _isStatDataDirty = false;
+    Protocol::StatData _statData;
+    float _curMp = 100.f;
+    float _curSp = 100.f;
 };
 

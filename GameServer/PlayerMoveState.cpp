@@ -48,7 +48,21 @@ void PlayerMoveState::Move(float deltaTime)
     Protocol::TransformData& transform = _owner.GetTransformData();
     const Vec2 worldMoveDirection = MathUtils::RotateByYaw(localMoveDirection, transform.yaw() + 180.f);
 
-    const float maxSpeed = _owner.GetInputKey(KEY_TYPE::LSHIFT) ? _sprintSpeed : _moveSpeed;
+
+    float maxSpeed = _moveSpeed;
+    if (_owner.GetCurSp() <= 1.f)
+    {
+        _sprintLock = true;
+    }
+    else if (_owner.GetCurSp() >= 20.f)
+    {
+        _sprintLock = false;
+    }
+
+    if (_sprintLock == false && _owner.GetInputKey(KEY_TYPE::LSHIFT) && _owner.TrySubtractSp(deltaTime * 20.f))
+    {
+        maxSpeed = _sprintSpeed;
+    }
     const Vec2 desiredVelocity = worldMoveDirection * maxSpeed;
     const float rate = localMoveDirection.LengthSquared() > 0.f ? _acceleration : _deceleration;
 

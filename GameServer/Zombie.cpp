@@ -71,6 +71,7 @@ void Zombie::Attack(int32 damage)
             Protocol::HealthData* healthData = hpChangePkt.add_healths();
             healthData->set_id(targetPlayer->GetId());
             healthData->set_hp(targetPlayer->GetHealth());
+            healthData->set_maxhp(targetPlayer->GetMaxHealth());
             SendBufferRef sendBuffer = ClientPacketHandler::MakeSendBuffer(hpChangePkt);
             GWorld->Broadcast(sendBuffer);
         }

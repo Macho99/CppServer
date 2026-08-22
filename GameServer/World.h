@@ -28,7 +28,7 @@ struct AnimationData
 namespace Protocol
 {
     class C_PLAYER_INPUT;
-    class C_SPAWN_MONSTER;
+    class C_PLAYER_SHOP_BUY;
 }
 class Zombie;
 
@@ -42,8 +42,9 @@ public:
 	void Leave(PlayerRef player);
 	void Broadcast(SendBufferRef sendBuffer);
     void PlayerInput(PlayerRef player, Protocol::C_PLAYER_INPUT pkt);
+    void PlayerShopBuy(PlayerRef player, Protocol::C_PLAYER_SHOP_BUY pkt);
     bool ValidatePosition(ValidatePositionInfo& info) const;
-    void SpawnMonster(const Protocol::C_SPAWN_MONSTER pkt);
+    void SpawnMonster(int count);
     void DespawnMonster(uint64 monsterId);
 
 public:
@@ -62,8 +63,7 @@ public:
         float maxDistance,
         float fieldOfView) const;
     void ShareZombieTarget(Zombie& source, float radius);
-    void DamageZombiesInView(
-        const Player& player,
+    void DamageZombiesInView(Player & player,
         float maxDistance,
         float angle,
         int32 damage);

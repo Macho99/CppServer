@@ -33,6 +33,11 @@ message C_PLAYER_INPUT
 	repeated Input inputs = 2;
 }
 
+message C_PLAYER_SHOP_BUY
+{
+	int32 itemId = 1;
+}
+
 message S_PLAYER_ANIMATION
 {
 	AnimationData animationData = 1;
@@ -73,6 +78,12 @@ message S_MONSTER_HP_CHANGE
 	repeated HealthData healths = 1;
 }
 
+message S_STAT_CHANGE
+{
+	HealthData health = 1;
+	StatData stat = 2;
+}
+
 message C_CHAT
 {
 	string msg = 1;
@@ -82,9 +93,4 @@ message S_CHAT
 {
 	uint64 playerId = 1;
 	string msg = 2;
-}
-
-message C_SPAWN_MONSTER
-{
-	int32 spawnLevel = 1;
 }

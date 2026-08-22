@@ -25,5 +25,5 @@ void ZombieAnimationState::OnAnimationEvent(const ClipEventData& eventData)
     if (eventData.eventName == "AttackDamage")
         static_cast<Zombie&>(GetOwner()).Attack(eventData.intParam);
     else if (eventData.eventName == "Scream" && eventData.boolParam)
-        GWorld->ShareZombieTarget(static_cast<Zombie&>(GetOwner()), 10.f);
+        GWorld->ShareZombieTarget(static_cast<Zombie&>(GetOwner()), 25.f);
 }

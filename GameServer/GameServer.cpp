@@ -31,7 +31,7 @@ void DoWorkerJob(ServerServiceRef& service)
 	{
 		LEndTickCount = ::GetTickCount64() + WORKER_TICK;
 
-		service->GetIocpCore()->Dispatch(10);
+		service->GetIocpCore()->Dispatch(5);
 		ThreadManager::DistributeReserveJobs();
 		ThreadManager::DoGlabalQueueWork();
 	}

@@ -33,6 +33,8 @@ public:
     const float GetAttackDistance() const { return AttackDistance; }
     const float GetAttackAngle() const { return AttackAngle; }
     void Attack(int32 damage);
+    bool IsTransformDirty() const { return _transformDirty; }
+    void SetTransformDirty(bool dirty) { _transformDirty = dirty; }
 
     virtual void PlayDeadAnimation() override;
     virtual void OnTakeDamage(int32 damage) override;
@@ -42,13 +44,14 @@ private:
     const float _individualMaxVelocity = 0.f; // 개체별 최대 속도 min ~ max
 
     static constexpr float PlayerDetectionRadius = 8.f;
-    static constexpr float PlayerFieldOfView = 60.f;
-    static constexpr float TargetScanInterval = 1.f;
+    static constexpr float PlayerFieldOfView = 120.f;
+    static constexpr float TargetScanInterval = 0.8f;
     static constexpr float AttackDistance = 1.f;
     static constexpr float AttackAngle = 60.f;
 
     uint64 _targetPlayerId = 0;
     Vec3 _targetPosition;
     float _leftTargetScanTime = 0.f;
+    bool _transformDirty = false;
 };
 

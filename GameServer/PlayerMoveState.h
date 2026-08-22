@@ -19,4 +19,6 @@ private:
     float _sprintSpeed = 5.f;
     float _acceleration = 20.f;
     float _deceleration = 25.f;
+
+    bool _sprintLock = true;
 };

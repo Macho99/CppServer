@@ -7,24 +7,31 @@ void ZombieIdleState::Enter()
 {
     _owner.ClearTargetPlayer();
     _leftDecisionTime = MathUtils::Random(MinDecisionInterval, MaxDecisionInterval);
+
+    Protocol::Vec2* blendInput = _owner.GetTransformData().mutable_blendinput();
+    blendInput->set_x(0.f);
+    blendInput->set_y(0.f);
+    _isFirstUpdate = true;
 }
 
 void ZombieIdleState::Update(float deltaTime)
 {
+    if (_isFirstUpdate == false)
+    {
+        _owner.SetTransformDirty(false);
+    }
+
     if (_owner.TryAcquireTargetAndScream())
     {
         return;
     }
-
-    _owner.Decelerate(_owner.GetTransformData().mutable_blendinput(), deltaTime);
-    Vec2 blendInput = Vec2(_owner.GetTransformData().blendinput().x(), _owner.GetTransformData().blendinput().y());
 
     _leftDecisionTime -= deltaTime;
     if (_leftDecisionTime > 0.f)
         return;
 
     const float random = MathUtils::Random(0.f, 1.f);
-    if (random < 0.5f && TrySetPatrolTarget())
+    if (random < 0.3f && TrySetPatrolTarget())
     {
         _owner.ChangeState(ZOMBIE_STATE::MOVE);
         return;
@@ -35,10 +42,12 @@ void ZombieIdleState::Update(float deltaTime)
         request.clipName = "zombie walk";
         _owner.PlayAnimation(request);
     }
+    _isFirstUpdate = false;
 }
 
 void ZombieIdleState::Exit()
 {
+    _owner.SetTransformDirty(true);
 }
 
 bool ZombieIdleState::TrySetPatrolTarget()

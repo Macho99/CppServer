@@ -31,7 +31,15 @@ public:
     virtual ~Character() = default;
 
     uint64 GetId() const { return _id; }
+    void AddHealth(int32 amount)
+    {
+        if (amount <= 0 || IsDead())
+            return;
+        _health = min(_health + amount, _maxHealth);
+    }
     int32 GetHealth() const { return _health; }
+    int32 GetMaxHealth() const { return _maxHealth; }
+    void SetMaxHealth(int32 maxHp) { _maxHealth = maxHp; }
     bool IsDead() const { return _health <= 0; }
     virtual void PlayDeadAnimation() = 0;
 
@@ -165,6 +173,7 @@ private:
 
     uint64 _id;
     int32 _health = 100;
+    int32 _maxHealth = 100;
     ValidatePositionInfo _validatePositionInfo;
     AnimationRequest<TStateType> _animationRequest;
 };

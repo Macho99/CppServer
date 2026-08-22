@@ -49,6 +49,16 @@ bool Handle_C_PLAYER_INPUT(PacketSessionRef& session, Protocol::C_PLAYER_INPUT& 
     return true;
 }
 
+bool Handle_C_PLAYER_SHOP_BUY(PacketSessionRef& session, Protocol::C_PLAYER_SHOP_BUY& pkt)
+{
+    GameSessionRef gameSession = static_pointer_cast<GameSession>(session);
+    if (gameSession->_player == nullptr)
+        return false;
+
+    GWorld->DoAsync(&World::PlayerShopBuy, gameSession->_player, pkt);
+    return true;
+}
+
 bool Handle_C_CHAT(PacketSessionRef& session, Protocol::C_CHAT& pkt)
 {
 	//cout << "Handle_C_CHAT" << endl;
@@ -61,10 +71,4 @@ bool Handle_C_CHAT(PacketSessionRef& session, Protocol::C_CHAT& pkt)
 	GWorld->DoAsync(&World::Broadcast, sendBuffer);
 
 	return true;
-}
-
-bool Handle_C_SPAWN_MONSTER(PacketSessionRef& session, Protocol::C_SPAWN_MONSTER& pkt)
-{
-    GWorld->DoAsync(&World::SpawnMonster, pkt);
-    return true;
 }

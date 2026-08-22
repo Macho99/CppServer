@@ -36,6 +36,16 @@ message HealthData
 {
 	uint64 id = 1;
 	int32 hp = 2;
+	int32 maxHp = 3;
+}
+
+message StatData
+{
+	int32 mp = 1;
+	int32 maxMp = 2;
+	int32 sp = 3;
+	int32 maxSp = 4;
+	int32 coin = 5;
 }
 
 message Player
